@@ -30,7 +30,7 @@ class TeamTask extends  Command
      *
      * @var string
      */
-    protected $signature = 'teamTask';
+    protected $signature = 'fmatch:teamTask';
 
     /**
      * The console command description.

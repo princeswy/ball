@@ -25,7 +25,7 @@ class RefereeTask extends  Command
      *
      * @var string
      */
-    protected $signature = 'refereeTask';
+    protected $signature = 'fmatch:refereeTask';
 
     /**
      * The console command description.

@@ -31,7 +31,7 @@ class PlayerTask extends  Command
      *
      * @var string
      */
-    protected $signature = 'playerTask {--team_id=}';
+    protected $signature = 'fmatch:playerTask {--team_id=}';
 
     /**
      * The console command description.

@@ -31,7 +31,7 @@ class ScoreTableTask extends  Command
      *
      * @var string
      */
-    protected $signature = 'scoreTableTask {--league_id=}';
+    protected $signature = 'fmatch:scoreTableTask {--league_id=}';
 
     /**
      * The console command description.

@@ -35,7 +35,7 @@ class LineUpTask extends  Command
      *
      * @var string
      */
-    protected $signature = 'lineUpTask {--match_id=}';
+    protected $signature = 'fmatch:lineUpTask {--match_id=}';
 
     /**
      * The console command description.

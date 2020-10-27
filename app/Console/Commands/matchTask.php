@@ -27,7 +27,7 @@ class MatchTask extends  Command
      *
      * @var string
      */
-    protected $signature = 'matchTask {--date=} {--league_id=} {--season=} {--match_id=} {--day=5}';
+    protected $signature = 'fmatch:matchTask {--date=} {--league_id=} {--season=} {--match_id=} {--day=5}';
 
     /**
      * The console command description.

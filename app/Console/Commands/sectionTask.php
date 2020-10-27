@@ -24,7 +24,7 @@ class SectionTask extends  Command
      *
      * @var string
      */
-    protected $signature = 'sectionTask';
+    protected $signature = 'fmatch:sectionTask';
 
     /**
      * The console command description.

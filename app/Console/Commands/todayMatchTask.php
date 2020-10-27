@@ -27,7 +27,7 @@ class TodayMatchTask extends  Command
      *
      * @var string
      */
-    protected $signature = 'todayMatchTask';
+    protected $signature = 'fmatch:todayMatchTask';
 
     /**
      * The console command description.

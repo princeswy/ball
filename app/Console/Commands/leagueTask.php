@@ -23,7 +23,7 @@ class LeagueTask extends  Command
      *
      * @var string
      */
-    protected $signature = 'leagueTask {--day=}';
+    protected $signature = 'fmatch:leagueTask {--day=}';
 
     /**
      * The console command description.

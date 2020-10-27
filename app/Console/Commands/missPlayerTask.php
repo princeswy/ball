@@ -33,7 +33,7 @@ class MissPlayerTask extends  Command
      *
      * @var string
      */
-    protected $signature = 'missPlayerTask';
+    protected $signature = 'fmatch:missPlayerTask';
 
     /**
      * The console command description.

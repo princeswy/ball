@@ -70,7 +70,27 @@ class FmatchController extends Controller
         $data = '';
         //查当前赛队的伤残
         if($team_id){
-            $data = Fmissplayer::join('d_player','d_player.id', '=', 'player_id')->where('d_missplayer.team_id',$team_id)->select('d_missplayer.player_name','d_missplayer.player_id','d_missplayer.player_status_name','d_player.position','d_player.shirt_num')->get();
+            $data = Fmissplayer::join('d_player','d_player.id', '=', 'player_id')->where('d_missplayer.team_id',$team_id)->select('d_missplayer.player_name','d_missplayer.player_id','d_missplayer.player_status_name','d_player.position','d_player.shirt_num')->get()->toarray();
+        }
+        $res['list'] = $data;
+        return $res;
+    }
+
+
+
+
+    //阵容
+    public function match_lineup(Request $request){
+        //1：主队 2：客队
+        $is_host = $request->input('is_host') ? $request->input('is_host') : 1;
+        //比赛Id
+        $match_id = $request->input('match_id') ? $request->input('match_id') : 0;
+        //获取类型
+        //1：首发 2：替补
+        $subsitute= $request->input('subsitute') ? $request->input('subsitute') : 1;
+        $data = '';
+        if($match_id){
+            $data = FmatchLineup::join('d_player','d_player.id', '=', 'player_id')->where('d_match_lineup.match_id',  $match_id)->where('d_match_lineup.subsitute',  $subsitute)->where('d_match_lineup.is_host',  $is_host)->select('d_match_lineup.player_name','d_match_lineup.player_number','d_player.logo')->get()->toarray();
         }
         $res['list'] = $data;
         return $res;

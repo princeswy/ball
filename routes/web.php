@@ -18,3 +18,4 @@ $router->get('/', function () use ($router) {
 //////
 $router->get('/api/getMatchList', 'FmatchController@show');
 $router->any('/api/missplayer', 'FmatchController@missplayer');
+$router->any('/api/match_lineup','FmatchController@match_lineup');

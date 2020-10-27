@@ -19,6 +19,7 @@ class FmatchController extends Controller
     public function show(Request $request) {
         $date = date('Y-m-d');
         $match_time = $request->input('match_time') ? $request->input('match_time') : $date;
+        $league_name = $request->input('league_name') ? $request->input('league_name') : false;
         $dateMap = [
             date("Y-m-d",strtotime("-1 day"))
         ];
@@ -43,11 +44,19 @@ class FmatchController extends Controller
                 '-12' => '腰斩',
                 '-13' => '中断',
                 '-14' => '推迟',
-            ]
+            ],
+            'leagueList' => []
         ];
-        $match_map = Fmatch::where('match_time', 'like', $match_time.'%')->orderBy('match_time', 'asc')->select('match_id','league_name','match_time','home_name','guest_name','match_state','half_score','score','home_red','guest_red','home_yellow','guest_yellow','home_corner','guest_corner')->get()->toarray();
+        $fmatch = Fmatch::where('match_time', 'like', $match_time.'%');
+        if ($league_name) {
+            $fmatch = $fmatch->Where('league_name', $league_name);
+        }
+        $match_map = $fmatch->orderBy('match_time', 'asc')->select('match_id','league_name','match_time','home_name','guest_name','match_state','half_score','score','home_red','guest_red','home_yellow','guest_yellow','home_corner','guest_corner')->get()->toarray();
         $res['list'] = $match_map;
-//        return json_encode($match_map);
+        if (count($match_map) > 0) {
+            $leagueMap = Fmatch::where('match_time', 'like', $match_time.'%')->get(['league_name'])->toArray();
+            $res['leagueList'] = array_unique(array_column($leagueMap, 'league_name'));
+        }
         return $res;
     }
 }

@@ -15,7 +15,7 @@ use Illuminate\Http\Request;
 class FmatchController extends Controller
 {
 
-////jhjjkkk
+//
     public function show(Request $request) {
     	$where = request()->all();
         //$match_map = Fmatch::whereBetween('match_time', ['2020-10-26 00:00:00', '2020-10-26 23:59:59'])->get()->toArray();

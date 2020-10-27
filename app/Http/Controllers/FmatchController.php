@@ -59,4 +59,21 @@ class FmatchController extends Controller
         }
         return $res;
     }
+
+
+
+
+    //伤停
+    public function missplayer(Request $request){
+
+        $team_id = $request->input('team_id') ? $request->input('team_id') : false;
+        $data = '';
+        //查当前赛队的伤残
+        if($team_id){
+            $data = Fmissplayer::join('d_player','d_player.id', '=', 'player_id')->where('d_missplayer.team_id',$team_id)->select('d_missplayer.player_name','d_missplayer.player_id','d_missplayer.player_status_name','d_player.position','d_player.shirt_num')->get();
+        }
+        $res['list'] = $data;
+        return $res;
+    }
+
 }

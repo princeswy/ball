@@ -10,6 +10,8 @@ namespace App\Http\Controllers;
 
 
 use App\models\Fmatch;
+use App\models\FmatchLineup;
+use App\models\Fmissplayer;
 use Illuminate\Http\Request;
 
 class FmatchController extends Controller

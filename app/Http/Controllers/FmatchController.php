@@ -91,7 +91,7 @@ class FmatchController extends Controller
         $subsitute= $request->input('subsitute') ? $request->input('subsitute') : 1;
         $data = '';
         if($match_id){
-            $data = FmatchLineup::join('d_player','d_player.id', '=', 'player_id')->where('d_match_lineup.match_id',  $match_id)->where('d_match_lineup.subsitute',  $subsitute)->where('d_match_lineup.is_host',  $is_host)->select('d_match_lineup.player_id','d_match_lineup.player_name','d_match_lineup.player_number','d_player.logo')->get()->toarray();
+            $data = FmatchLineup::join('d_player','d_player.id', '=', 'player_id')->where('d_match_lineup.match_id',  $match_id)->where('d_match_lineup.subsitute',  $subsitute)->where('d_match_lineup.is_host',  $is_host)->select('d_match_lineup.player_name','d_match_lineup.player_number','d_player.logo','d_match_lineup.player_id')->get()->toarray();
         }
 
         return ['code' => 1,'success' => true,'dateList' => $data];

@@ -79,7 +79,6 @@ class FmatchController extends Controller
 
 
 
-
     //阵容
     public function match_lineup(Request $request){
         //1：主队 2：客队

@@ -53,7 +53,7 @@ class FmatchController extends Controller
         if ($league_name) {
             $fmatch = $fmatch->whereIn('league_name', explode(',', $league_name));
         }
-        $match_map = $fmatch->orderBy('match_time', 'asc')->select('match_id','league_name','match_time','home_name','guest_name','home_id','guest_id','match_state','half_score','score','home_red','guest_red','home_yellow','guest_yellow','home_corner','guest_corner','league_id','season_id')->get()->toarray();
+        $match_map = $fmatch->orderBy('match_time', 'asc')->select('match_id','league_id','season_id','league_name','match_time','home_name','guest_name','home_id','guest_id','match_state','half_score','score','home_red','guest_red','home_yellow','guest_yellow','home_corner','guest_corner')->get()->toarray();
         $res['list'] = $match_map;
         if (count($match_map) > 0) {
             $leagueMap = Fmatch::where('match_time', 'like', $match_time.'%')->get(['league_name'])->toArray();

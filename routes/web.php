@@ -15,12 +15,12 @@ $router->get('/', function () use ($router) {
     return $router->app->version();
 });
 
-$router->any('/api/getMatchList', 'FmatchController@show');
-$router->any('/api/getMissplayer', 'FmatchController@missplayer');
-$router->any('/api/getMatch_lineup','FmatchController@match_lineup');
-$router->any('/api/getScoretable','FscoretableController@index');
-$router->any('/api/getShooters','FshootersController@index');
-$router->any('/api/getPlayercount','FplayercountController@index');
-$router->any('/api/getMatchInfo','MatchController@match_info');
-$router->any('/api/getLeaguelist','HomeController@league_list');
-$router->any('/api/getSeasonlist','HomeController@season_list');
+$router->get('/api/getMatchList', 'FmatchController@show');
+$router->get('/api/getMissplayer', 'FmatchController@missplayer');
+$router->get('/api/getMatch_lineup','FmatchController@match_lineup');
+$router->get('/api/getScoretable','FscoretableController@index');
+$router->get('/api/getShooters','FshootersController@index');
+$router->get('/api/getPlayercount','FplayercountController@index');
+$router->get('/api/getMatchInfo','MatchController@match_info');
+$router->get('/api/getLeaguelist','HomeController@league_list');
+$router->get('/api/getSeasonlist','HomeController@season_list');

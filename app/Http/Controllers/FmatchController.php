@@ -12,6 +12,7 @@ namespace App\Http\Controllers;
 use App\models\Fmatch;
 use App\models\FmatchLineup;
 use App\models\Fmissplayer;
+use App\Models\Fteam;
 use Illuminate\Http\Request;
 
 class FmatchController extends Controller
@@ -53,7 +54,7 @@ class FmatchController extends Controller
         if ($league_name) {
             $fmatch = $fmatch->whereIn('league_name', explode(',', $league_name));
         }
-        $match_map = $fmatch->orderBy('match_time', 'asc')->select('match_id','league_name','match_time','home_name','guest_name','home_id','guest_id','match_state','half_score','score','home_red','guest_red','home_yellow','guest_yellow','home_corner','guest_corner')->get()->toarray();
+        $match_map = $fmatch->orderBy('match_time', 'asc')->select('match_id','league_id','season_id','league_name','match_time','home_name','guest_name','home_id','guest_id','match_state','half_score','score','home_red','guest_red','home_yellow','guest_yellow','home_corner','guest_corner')->get()->toarray();
         $res['list'] = $match_map;
         if (count($match_map) > 0) {
             $leagueMap = Fmatch::where('match_time', 'like', $match_time.'%')->get(['league_name'])->toArray();
@@ -91,9 +92,9 @@ class FmatchController extends Controller
         $subsitute= $request->input('subsitute') ? $request->input('subsitute') : 1;
         $data = '';
         if($match_id){
-            $data = FmatchLineup::join('d_player','d_player.id', '=', 'player_id')->where('d_match_lineup.match_id',  $match_id)->where('d_match_lineup.subsitute',  $subsitute)->where('d_match_lineup.is_host',  $is_host)->select('d_match_lineup.player_name','d_match_lineup.player_number','d_player.logo')->get()->toarray();
+            $data = FmatchLineup::join('d_player','d_player.id', '=', 'player_id')->where('d_match_lineup.match_id',  $match_id)->where('d_match_lineup.subsitute',  $subsitute)->where('d_match_lineup.is_host',  $is_host)->select('d_match_lineup.player_name','d_match_lineup.player_number','d_player.logo','d_match_lineup.player_id')->get()->toarray();
         }
-
+        
         return ['code' => 1,'success' => true,'dateList' => $data];
     }
 

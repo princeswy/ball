@@ -27,7 +27,5 @@ class FscoretableController extends Controller
 
 
 
-    
-
 
 }

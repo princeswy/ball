@@ -17,5 +17,5 @@ $router->get('/', function () use ($router) {
 //ceshi
 //////
 $router->get('/api/getMatchList', 'FmatchController@show');
-$router->any('/api/missplayer', 'FmatchController@missplayer');
-$router->any('/api/match_lineup','FmatchController@match_lineup');
+$router->get('/api/missplayer', 'FmatchController@missplayer');
+$router->get('/api/match_lineup','FmatchController@match_lineup');

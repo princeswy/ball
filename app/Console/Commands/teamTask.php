@@ -41,9 +41,10 @@ class TeamTask extends  Command
     public static $Url = 'http://interface.win007.com/football/team.aspx';
 
     public function handle () {
-        $page = Task::where('task_name', 'team')->first()->toArray()['page'];
-        $this->info('正在处理第'.$page.'页数据');
-        $url = self::$Url.'?page='.$page;
+//        $page = Task::where('task_name', 'team')->first()->toArray()['page'];
+//        $this->info('正在处理第'.$page.'页数据');
+//        $url = self::$Url.'?page='.$page;
+        $url = self::$Url;
         $res = self::send_request($url);
         $resData = json_decode($res['content']);
         foreach ($resData->teamList as $key => $val) {
@@ -83,11 +84,11 @@ class TeamTask extends  Command
             $teamData['master_id'] = $manangerId;
             Fteam::handleSection($teamWhere, $teamData);
         }
-        $updatePage = $page + 1;
-        if ($updatePage >= 5) {
-            $updatePage = 1;
-        }
-        Task::where('task_name', 'team')->update(['page' => $updatePage]);
+//        $updatePage = $page + 1;
+//        if ($updatePage >= 5) {
+//            $updatePage = 1;
+//        }
+//        Task::where('task_name', 'team')->update(['page' => $updatePage]);
         $this->info('共处理'.count($resData->teamList).'条数据');
         sleep(90);
         $this->handle();

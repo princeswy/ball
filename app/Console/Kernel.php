@@ -39,6 +39,10 @@ class Kernel extends ConsoleKernel
         \App\Console\Commands\ShootersTask::class, // 每天凌晨5点执行
         // 球员详细技术统计榜
         \App\Console\Commands\PlayerCountTask::class, // 10分钟一次
+        // 欧赔
+        \App\Console\Commands\OddsTask::class,
+        // 亚盘 1亚盘 2大小球
+        \App\Console\Commands\HOddsTask::class,
     ];
 
     /**

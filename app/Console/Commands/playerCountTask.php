@@ -96,6 +96,8 @@ class PlayerCountTask extends  Command
             return false;
             exit;
         }
+        $homeDataMap = [];
+        $guestDataMap = [];
         foreach ($resData->list as $key => $val) {
             // 赛季
             $seasonData = [
@@ -110,6 +112,12 @@ class PlayerCountTask extends  Command
             // 球员
             $playerData = Fplayer::where('out_playerid', $val->playerId)->first();
             $playerId = $playerData ? $playerData->toArray()['id'] : 0;
+            if ($val->isHome) {
+                $homeDataMap[$val->playerId] = $val;
+            } else {
+                $guestDataMap[$val->playerId] = $val;
+            }
+            continue;
 
             $where = [
                 'league_id' => $leagueData['league_id'],
@@ -166,6 +174,7 @@ class PlayerCountTask extends  Command
 
             FplayerCount::handleData($where, $inData);
         }
+        dd(count($homeDataMap), count($guestDataMap));
     }
 
     /**

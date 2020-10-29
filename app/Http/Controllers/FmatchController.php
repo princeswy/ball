@@ -12,6 +12,7 @@ namespace App\Http\Controllers;
 use App\models\Fmatch;
 use App\models\FmatchLineup;
 use App\models\Fmissplayer;
+use App\Models\Fteam;
 use Illuminate\Http\Request;
 
 class FmatchController extends Controller
@@ -93,7 +94,7 @@ class FmatchController extends Controller
         if($match_id){
             $data = FmatchLineup::join('d_player','d_player.id', '=', 'player_id')->where('d_match_lineup.match_id',  $match_id)->where('d_match_lineup.subsitute',  $subsitute)->where('d_match_lineup.is_host',  $is_host)->select('d_match_lineup.player_name','d_match_lineup.player_number','d_player.logo','d_match_lineup.player_id')->get()->toarray();
         }
-
+        
         return ['code' => 1,'success' => true,'dateList' => $data];
     }
 

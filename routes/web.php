@@ -20,3 +20,7 @@ $router->any('/api/getMissplayer', 'FmatchController@missplayer');
 $router->any('/api/getMatch_lineup','FmatchController@match_lineup');
 $router->any('/api/getScoretable','FscoretableController@index');
 $router->any('/api/getShooters','FshootersController@index');
+$router->any('/api/getPlayercount','FplayercountController@index');
+$router->any('/api/getMatchInfo','MatchController@match_info');
+$router->any('/api/getLeaguelist','HomeController@league_list');
+$router->any('/api/getSeasonlist','HomeController@season_list');

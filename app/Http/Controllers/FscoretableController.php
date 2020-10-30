@@ -30,8 +30,9 @@ class FscoretableController extends Controller
 
     //球队积分榜
     public function match(Request $request){
+        $data = [];
         //'主客队标识 0：全场 1：主场 2：客场'
-        $is_host = $request->input('is_host') ? $request->input('is_host') :0;
+    //    $is_host = $request->input('is_host') ? $request->input('is_host') :0;
         $match_id = $request->input('match_id') ? $request->input('match_id') :0;
         //获取主客队的ID
         $fmatch = Fmatch::where('match_id', $match_id)->select('season_id','league_id','home_id','guest_id')->get()->toarray();
@@ -52,8 +53,7 @@ class FscoretableController extends Controller
 
         }
         $data['total'] = $total;
-        $data['home'] = $home;
-        $data['guest'] = $guest;
+        $data['home_guest'] = array_merge($home,$guest);
         return ['code' => 1,'success' => true,'dateList' => $data];
     }
 

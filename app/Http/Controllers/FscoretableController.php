@@ -45,7 +45,7 @@ class FscoretableController extends Controller
             $season_id = $fmatch[0]['season_id'];
             $league_id = $fmatch[0]['league_id'];
         
-        $total = $rows->where('is_host', $is_host)->wherein('team_id', $team_id)->->where('league_id', $league_id)->where('season_id', $season_id)->select('id','team_id','team_name','rank','points','total_count','win_count','draw_count','lost_count','get_score','lost_score','color','info')->get()->toarray();
+        $total = $rows->where('is_host', $is_host)->wherein('team_id', $team_id)->where('league_id', $league_id)->where('season_id', $season_id)->select('id','team_id','team_name','rank','points','total_count','win_count','draw_count','lost_count','get_score','lost_score','color','info')->get()->toarray();
         //主场积分
         $home = FscoreTable::where('type', '0')->where('team_id', $fmatch[0]['home_id'])->where('is_host', 1)->where('league_id', $league_id)->where('season_id', $season_id)->select('id','team_id','team_name','rank','points','total_count','win_count','draw_count','lost_count','get_score','lost_score','color','info')->get()->toarray();
         //客场积分

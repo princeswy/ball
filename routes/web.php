@@ -19,6 +19,8 @@ $router->get('/api/getMatchList', 'FmatchController@show');
 $router->get('/api/getMissplayer', 'FmatchController@missplayer');
 $router->get('/api/getMatch_lineup','FmatchController@match_lineup');
 $router->get('/api/getScoretable','FscoretableController@index');
+$router->get('/api/getFscoretableMatch','FscoretableController@match');
+
 $router->get('/api/getShooters','FshootersController@index');
 $router->get('/api/getPlayercount','FplayercountController@index');
 $router->get('/api/getMatchInfo','MatchController@match_info');

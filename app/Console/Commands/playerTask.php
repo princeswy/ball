@@ -24,7 +24,7 @@ use GuzzleHttp\Psr7\Request;
 use GuzzleHttp\Exception\RequestException;
 use MongoDB\Driver\Manager;
 
-class PlayerTask extends  Command
+class playerTask extends  Command
 {
     /**
      * The name and signature of the console command.

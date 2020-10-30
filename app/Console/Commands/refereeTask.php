@@ -18,7 +18,7 @@ use GuzzleHttp\Client;
 use GuzzleHttp\Psr7\Request;
 use GuzzleHttp\Exception\RequestException;
 
-class RefereeTask extends  Command
+class refereeTask extends  Command
 {
     /**
      * The name and signature of the console command.

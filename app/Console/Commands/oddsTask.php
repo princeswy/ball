@@ -21,7 +21,7 @@ use GuzzleHttp\Client;
 use GuzzleHttp\Psr7\Request;
 use GuzzleHttp\Exception\RequestException;
 
-class OddsTask extends  Command
+class oddsTask extends  Command
 {
     /**
      * The name and signature of the console command.

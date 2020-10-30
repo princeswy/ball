@@ -112,12 +112,6 @@ class PlayerCountTask extends  Command
             // 球员
             $playerData = Fplayer::where('out_playerid', $val->playerId)->first();
             $playerId = $playerData ? $playerData->toArray()['id'] : 0;
-            if ($val->isHome) {
-                $homeDataMap[$val->playerId] = $val;
-            } else {
-                $guestDataMap[$val->playerId] = $val;
-            }
-            continue;
 
             $where = [
                 'league_id' => $leagueData['league_id'],
@@ -172,7 +166,110 @@ class PlayerCountTask extends  Command
                 'modifyTime' => $val->modifyTime
             ];
 
+            if ($val->isHome) {
+                $homeDataMap[] = $inData;
+            } else {
+                $guestDataMap[] = $inData;
+            }
+
             FplayerCount::handleData($where, $inData);
+        }
+        if (count($homeDataMap) > count($guestDataMap)) {
+            foreach ($homeDataMap as $h_key => $h_val) {
+                $h_val['is_home'] = 2;
+                foreach ($guestDataMap as $g_key => $g_val) {
+                    $allWhere = [
+                        'league_id' => $h_val['league_id'],
+                        'season_id' => $h_val['season_id'],
+                        'team_id' => $h_val['team_id'],
+                        'player_id' => $h_val['player_id'],
+                        'is_home' => 2,
+                    ];
+                    if ($h_val['out_player_id'] == $g_val['out_player_id']) {
+                        $h_val['appearanceNum'] = (int) $h_val['appearanceNum'] + (int) $g_val['appearanceNum'];
+                        $h_val['substituteNum'] = (int) $h_val['substituteNum'] + (int) $g_val['substituteNum'];
+                        $h_val['playingTime'] = (int) $h_val['playingTime'] + (int) $g_val['playingTime'];
+                        $h_val['goals'] = (int) $h_val['goals'] + (int) $g_val['goals'];
+                        $h_val['penaltyGoals'] = (int) $h_val['penaltyGoals'] + (int) $g_val['penaltyGoals'];
+                        $h_val['shots'] = (int) $h_val['shots'] + (int) $g_val['shots'];
+                        $h_val['shotsTarget'] = (int) $h_val['shotsTarget'] + (int) $g_val['shotsTarget'];
+                        $h_val['wasFouled'] = (int) $h_val['wasFouled'] + (int) $g_val['wasFouled'];
+                        $h_val['offsides'] = (int) $h_val['offsides'] + (int) $g_val['offsides'];
+                        $h_val['bestSum'] = (int) $h_val['bestSum'] + (int) $g_val['bestSum'];
+                        $h_val['totalPass'] = (int) $h_val['totalPass'] + (int) $g_val['totalPass'];
+                        $h_val['passSuc'] = (int) $h_val['passSuc'] + (int) $g_val['passSuc'];
+                        $h_val['keyPass'] = (int) $h_val['keyPass'] + (int) $g_val['keyPass'];
+                        $h_val['assist'] = (int) $h_val['assist'] + (int) $g_val['assist'];
+                        $h_val['longBall'] = (int) $h_val['longBall'] + (int) $g_val['longBall'];
+                        $h_val['longBallsSuc'] = (int) $h_val['longBallsSuc'] + (int) $g_val['longBallsSuc'];
+                        $h_val['throughBall'] = (int) $h_val['throughBall'] + (int) $g_val['throughBall'];
+                        $h_val['throughBallSuc'] = (int) $h_val['throughBallSuc'] + (int) $g_val['throughBallSuc'];
+                        $h_val['dribblesSuc'] = (int) $h_val['dribblesSuc'] + (int) $g_val['dribblesSuc'];
+                        $h_val['crossNum'] = (int) $h_val['crossNum'] + (int) $g_val['crossNum'];
+                        $h_val['crossSuc'] = (int) $h_val['crossSuc'] + (int) $g_val['crossSuc'];
+                        $h_val['tackles'] = (int) $h_val['tackles'] + (int) $g_val['tackles'];
+                        $h_val['interception'] = (int) $h_val['interception'] + (int) $g_val['interception'];
+                        $h_val['clearance'] = (int) $h_val['clearance'] + (int) $g_val['clearance'];
+                        $h_val['dispossessed'] = (int) $h_val['dispossessed'] + (int) $g_val['dispossessed'];
+                        $h_val['shotsBlocked'] = (int) $h_val['shotsBlocked'] + (int) $g_val['shotsBlocked'];
+                        $h_val['aerialSuc'] = (int) $h_val['aerialSuc'] + (int) $g_val['aerialSuc'];
+                        $h_val['fouls'] = (int) $h_val['fouls'] + (int) $g_val['fouls'];
+                        $h_val['red'] = (int) $h_val['red'] + (int) $g_val['red'];
+                        $h_val['yellow'] = (int) $h_val['yellow'] + (int) $g_val['yellow'];
+                        $h_val['turnover'] = (int) $h_val['turnover'] + (int) $g_val['turnover'];
+                    }
+
+                    FplayerCount::handleData($allWhere, $h_val);
+                }
+            }
+        } else {
+            foreach ($guestDataMap as $g_key=> $g_val) {
+                $g_val['is_home'] = 2;
+                foreach ($homeDataMap as $h_key  => $h_val) {
+                    $allWhere = [
+                        'league_id' => $g_val['league_id'],
+                        'season_id' => $g_val['season_id'],
+                        'team_id' => $g_val['team_id'],
+                        'player_id' => $g_val['player_id'],
+                        'is_home' => 2,
+                    ];
+                    if ($g_val['out_player_id'] == $g_val['out_player_id']) {
+                        $g_val['appearanceNum'] = (int) $g_val['appearanceNum'] + (int) $h_val['appearanceNum'];
+                        $g_val['substituteNum'] = (int) $g_val['substituteNum'] + (int) $h_val['substituteNum'];
+                        $g_val['playingTime'] = (int) $g_val['playingTime'] + (int) $h_val['playingTime'];
+                        $g_val['goals'] = (int) $g_val['goals'] + (int) $h_val['goals'];
+                        $g_val['penaltyGoals'] = (int) $g_val['penaltyGoals'] + (int) $h_val['penaltyGoals'];
+                        $g_val['shots'] = (int) $g_val['shots'] + (int) $h_val['shots'];
+                        $g_val['shotsTarget'] = (int) $g_val['shotsTarget'] + (int) $h_val['shotsTarget'];
+                        $g_val['wasFouled'] = (int) $g_val['wasFouled'] + (int) $h_val['wasFouled'];
+                        $g_val['offsides'] = (int) $g_val['offsides'] + (int) $h_val['offsides'];
+                        $g_val['bestSum'] = (int) $g_val['bestSum'] + (int) $h_val['bestSum'];
+                        $g_val['totalPass'] = (int) $g_val['totalPass'] + (int) $h_val['totalPass'];
+                        $g_val['passSuc'] = (int) $g_val['passSuc'] + (int) $h_val['passSuc'];
+                        $g_val['keyPass'] = (int) $g_val['keyPass'] + (int) $h_val['keyPass'];
+                        $g_val['assist'] = (int) $g_val['assist'] + (int) $h_val['assist'];
+                        $g_val['longBall'] = (int) $g_val['longBall'] + (int) $h_val['longBall'];
+                        $g_val['longBallsSuc'] = (int) $g_val['longBallsSuc'] + (int) $h_val['longBallsSuc'];
+                        $g_val['throughBall'] = (int) $g_val['throughBall'] + (int) $h_val['throughBall'];
+                        $g_val['throughBallSuc'] = (int) $g_val['throughBallSuc'] + (int) $h_val['throughBallSuc'];
+                        $g_val['dribblesSuc'] = (int) $g_val['dribblesSuc'] + (int) $h_val['dribblesSuc'];
+                        $g_val['crossNum'] = (int) $g_val['crossNum'] + (int) $h_val['crossNum'];
+                        $g_val['crossSuc'] = (int) $g_val['crossSuc'] + (int) $h_val['crossSuc'];
+                        $g_val['tackles'] = (int) $g_val['tackles'] + (int) $h_val['tackles'];
+                        $g_val['interception'] = (int) $g_val['interception'] + (int) $h_val['interception'];
+                        $g_val['clearance'] = (int) $g_val['clearance'] + (int) $h_val['clearance'];
+                        $g_val['dispossessed'] = (int) $g_val['dispossessed'] + (int) $h_val['dispossessed'];
+                        $g_val['shotsBlocked'] = (int) $g_val['shotsBlocked'] + (int) $h_val['shotsBlocked'];
+                        $g_val['aerialSuc'] = (int) $g_val['aerialSuc'] + (int) $h_val['aerialSuc'];
+                        $g_val['fouls'] = (int) $g_val['fouls'] + (int) $h_val['fouls'];
+                        $g_val['red'] = (int) $g_val['red'] + (int) $h_val['red'];
+                        $g_val['yellow'] = (int) $g_val['yellow'] + (int) $h_val['yellow'];
+                        $g_val['turnover'] = (int) $g_val['turnover'] + (int) $h_val['turnover'];
+                    }
+
+                    FplayerCount::handleData($allWhere, $g_val);
+                }
+            }
         }
         dd(count($homeDataMap), count($guestDataMap));
     }

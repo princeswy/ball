@@ -16,7 +16,7 @@ use GuzzleHttp\Client;
 use GuzzleHttp\Psr7\Request;
 use GuzzleHttp\Exception\RequestException;
 
-class LeagueTask extends  Command
+class leagueTask extends  Command
 {
     /**
      * The name and signature of the console command.

@@ -20,7 +20,7 @@ use GuzzleHttp\Client;
 use GuzzleHttp\Psr7\Request;
 use GuzzleHttp\Exception\RequestException;
 
-class MatchTask extends  Command
+class matchTask extends  Command
 {
     /**
      * The name and signature of the console command.

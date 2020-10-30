@@ -28,7 +28,7 @@ use GuzzleHttp\Psr7\Request;
 use GuzzleHttp\Exception\RequestException;
 use MongoDB\Driver\Manager;
 
-class LineUpTask extends  Command
+class lineUpTask extends  Command
 {
     /**
      * The name and signature of the console command.

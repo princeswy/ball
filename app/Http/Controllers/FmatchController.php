@@ -22,7 +22,7 @@ class FmatchController extends Controller
     public function show(Request $request) {
         $date = date('Y-m-d');
         $match_time = $request->input('match_time') ? $request->input('match_time') : $date;
-        $league_name = $request->input('league_id') ? $request->input('league_id') : false;
+        $league_id = $request->input('league_id') ? $request->input('league_id') : false;
         $dateMap = [
             date("Y-m-d",strtotime("-1 day"))
         ];

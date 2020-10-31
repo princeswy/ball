@@ -23,7 +23,7 @@ class FscoretableController extends Controller
         }
         $row = $row->where('is_host', $is_host)->where('league_id', $league_id)->where('season_id', $season_id)->select('id','team_id','team_name','rank','points','total_count','win_count','draw_count','lost_count','get_score','lost_score','color','info')->get()->toarray();
 
-        return ['code' => 1,'success' => true,'dateList' => $row];
+        return ['code' => 1,'success' => true,'list' => $row];
     }
 
 
@@ -32,7 +32,7 @@ class FscoretableController extends Controller
     public function match(Request $request){
         $data = [];
         //'主客队标识 0：全场 1：主场 2：客场'
-    //    $is_host = $request->input('is_host') ? $request->input('is_host') :0;
+        $is_host = $request->input('is_host') ? $request->input('is_host') :0;
         $match_id = $request->input('match_id') ? $request->input('match_id') :0;
         //获取主客队的ID
         $fmatch = Fmatch::where('match_id', $match_id)->select('season_id','league_id','home_id','guest_id')->get()->toarray();
@@ -54,7 +54,7 @@ class FscoretableController extends Controller
         }
         $data['total'] = $total;
         $data['home_guest'] = array_merge($home,$guest);
-        return ['code' => 1,'success' => true,'dateList' => $data];
+        return ['code' => 1,'success' => true,'list' => $data];
     }
 
 

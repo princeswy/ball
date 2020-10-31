@@ -23,13 +23,13 @@ $router->get('/api/getFscoretableMatch','FscoretableController@match');
 
 $router->get('/api/getShooters','FshootersController@index');
 $router->get('/api/getPlayercount','FplayercountController@index');
-$router->get('/api/getMatchInfo','MatchController@match_info');
+$router->get('/api/getMatchInfo','FmatchController@match_info');
 $router->get('/api/getLeaguelist','HomeController@league_list');
 $router->get('/api/getSeasonlist','HomeController@season_list');
 
 
 
-$router->get('Match/history_match','MatchController@history_match');
-$router->get('Match/home_history_match','MatchController@home_history_match');
-$router->get('Match/future_match','MatchController@future_match');
-$router->get('Match/match_lineup','MatchController@match_lineup');
+$router->get('/api/history_match','FmatchController@history_match');
+$router->get('/api/home_history_match','FmatchController@home_history_match');
+$router->get('/api/future_match','FmatchController@future_match');
+$router->get('/api/match_lineup','FmatchController@match_lineup');

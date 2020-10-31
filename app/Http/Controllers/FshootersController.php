@@ -15,7 +15,7 @@ class FshootersController extends Controller
 
         $row = Fshooters::join('d_player','d_player.id', '=', 'player_id')->where('league_id', $league_id)->where('season_id', $season_id)->select('d_shooters.id','d_shooters.player_name','d_shooters.team_name','d_shooters.goals','d_shooters.penalty_goals','d_player.logo','d_shooters.player_id')->skip(0)->take(30)->orderBy('goals', 'desc')->get()->toarray();
 
-        return ['code' => 1,'success' => true,'dateList' => $row];
+        return ['code' => 1,'success' => true,'list' => $row];
     }
 
 

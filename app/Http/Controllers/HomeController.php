@@ -19,7 +19,7 @@ class HomeController extends Controller
         $league = Fleague::whereIn('league_name', explode(',', $league_name))->select('league_id','league_name')->get()->toarray();
         // $log = DB::getQueryLog($league);
        // dd($log);
-        return ['code' => 1,'success' => true,'dateList' => $league];
+        return ['code' => 1,'success' => true,'list' => $league];
     }
 
 
@@ -29,7 +29,7 @@ class HomeController extends Controller
 
         $season = Fseason::where('league_id', $league_id)->where('season_name','<>', '')->select('season_id','season_name')->get()->toarray();
  
-        return ['code' => 1,'success' => true,'dateList' => $season];
+        return ['code' => 1,'success' => true,'list' => $season];
     }
     
 

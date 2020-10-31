@@ -16,7 +16,7 @@ class FplayercountController extends Controller
        // $row = FplayerCount::where('is_home', '0');
         $row = FplayerCount::join('d_player','d_player.id', '=', 'd_player_count.player_id')->join('d_team','d_team.team_id', '=', 'd_player_count.team_id')->where('d_player_count.league_id', $league_id)->where('d_player_count.season_id', $season_id)->select('d_player_count.assist','d_player_count.team_id','d_player.id','d_player.player_name','d_player.logo','d_team.team_name')->skip(0)->take(30)->orderBy('assist', 'desc')->get()->toarray();
 
-        return ['code' => 1,'success' => true,'dateList' => $row];
+        return ['code' => 1,'success' => true,'list' => $row];
     }
 
 

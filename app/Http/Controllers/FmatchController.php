@@ -12,7 +12,7 @@ namespace App\Http\Controllers;
 use App\models\Fmatch;
 use App\models\FmatchLineup;
 use App\models\Fmissplayer;
-use App\Models\Fteam;
+use App\models\Fteam;
 use Illuminate\Http\Request;
 
 class FmatchController extends Controller
@@ -34,6 +34,7 @@ class FmatchController extends Controller
             'success' => true,
             'dateList' => $dateMap,
             'curDate' => $match_time,
+            'sysTime' => date('Y-m-d H:i:s'),
             'matchState' => [
                 0 => '未开赛',
                 1 => '上半场',
@@ -214,7 +215,7 @@ class FmatchController extends Controller
         $team_guest = Fteam::where('team_id',$match[0]['guest_id'])->select('logo_path')->get()->toarray();
         $match[0]['home_logo'] = $team_home[0]['logo_path'];
         $match[0]['guest_logo'] = $team_guest[0]['logo_path'];
-        return ['code' => 1,'success' => true,'List' => $match];
+        return ['code' => 1,'success' => true,'list' => $match, 'sysTime' => date('Y-m-d H:i:s')];
     }
 
 }

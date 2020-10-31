@@ -3,9 +3,9 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\Models\Country;
-use App\Models\Fleague;
-use App\Models\Fseason;
+use App\models\Country;
+use App\models\Fleague;
+use App\models\Fseason;
 use DB;
 class HomeController extends Controller
 {

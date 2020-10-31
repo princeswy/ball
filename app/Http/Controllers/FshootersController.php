@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 use Illuminate\Http\Request;
-use App\Models\Fshooters;
+use App\models\Fshooters;
 use DB;
 class FshootersController extends Controller
 {

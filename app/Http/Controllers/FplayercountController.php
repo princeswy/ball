@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\Models\FplayerCount;
+use App\models\FplayerCount;
 use DB;
 class FplayercountController extends Controller
 {

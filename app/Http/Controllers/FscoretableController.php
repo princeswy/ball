@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\Models\FscoreTable;
+use App\models\FscoreTable;
 use App\models\Fmatch;
 use DB;
 class FscoretableController extends Controller

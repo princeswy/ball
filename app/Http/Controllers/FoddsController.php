@@ -16,7 +16,6 @@ use Illuminate\Http\Request;
 class FoddsController extends Controller
 {
     public function odds_list(Request $request) {
-        echo "<pre>";
         $match_id = $request->input('match_id') ? $request->input('match_id') : false;
         $ret = [
             'code' => 1,

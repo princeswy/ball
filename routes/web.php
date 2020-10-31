@@ -33,3 +33,5 @@ $router->get('/api/history_match','FmatchController@history_match');
 $router->get('/api/home_history_match','FmatchController@home_history_match');
 $router->get('/api/future_match','FmatchController@future_match');
 $router->get('/api/match_lineup','FmatchController@match_lineup');
+
+$router->get('/api/getOddsList','FoddsController@odds_list');

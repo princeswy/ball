@@ -43,6 +43,7 @@ class Kernel extends ConsoleKernel
         \App\Console\Commands\oddsTask::class,
         // 亚盘 1亚盘 2大小球
         \App\Console\Commands\hOddsTask::class,
+        \App\Console\Commands\matchDetailTask::class,
     ];
 
     /**
@@ -78,5 +79,13 @@ class Kernel extends ConsoleKernel
         $schedule->command('fmatch:shootersTask')->dailyAt('5:00')->withoutOverlapping();
         # 球员详细技术统计榜
         $schedule->command('fmatch:playerCountTask')->everyTenMinutes()->withoutOverlapping();
+        # 欧赔
+        $schedule->command('fmatch:oddsTask')->cron('*/2 * * * *')->withoutOverlapping();
+        # 亚盘
+        $schedule->command('fmatch:hOddsTask --odds_type=1')->everyThirtyMinutes()->withoutOverlapping();
+        # 大小球
+        $schedule->command('fmatch:hOddsTask --odds_type=2')->everyThirtyMinutes()->withoutOverlapping();
+        # 比赛技术统计
+        $schedule->command('fmatch:matchDetail')->everyMinute()->withoutOverlapping();
     }
 }

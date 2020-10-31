@@ -71,14 +71,15 @@ class Ftotalodds extends Model
             if(!$bookMakerId){
                 continue ;
             }
-            $init_handicap_num = $init_handicap_num * -1;
-            $handicap_num = $handicap_num * -1;
+//            $init_handicap_num = $init_handicap_num * -1;
+//            $handicap_num = $handicap_num * -1;
             $odds[] = [
                 'start' => [
                     'match_id' => $match_id,
                     'out_match_id' => $out_matchid,
                     'bookmaker_id' => $bookMakerId,
                     'handicap_num' => $init_handicap_num,
+                    'odds_type' => 0,
                     'over' => $s_over,
                     'under' => $s_under,
                     'created_at' => date('Y-m-d H:i:s'),
@@ -89,6 +90,7 @@ class Ftotalodds extends Model
                     'out_match_id' => $out_matchid,
                     'bookmaker_id' => $bookMakerId,
                     'handicap_num' => $handicap_num,
+                    'odds_type' => 1,
                     'over' => $over,
                     'under' => $under,
                     'created_at' => date('Y-m-d H:i:s'),
@@ -104,17 +106,18 @@ class Ftotalodds extends Model
     {
 
         $eodds = $eodds ? $eodds : $odds;
-        $startOdds = self::where(['match_id' => $odds['match_id'],'out_match_id' => $odds['out_match_id'],'bookmaker_id' => $odds['bookmaker_id'], 'handicap_num' => $odds['handicap_num']])->first();
+        $startOdds = self::where(['match_id' => $odds['match_id'],'out_match_id' => $odds['out_match_id'],'bookmaker_id' => $odds['bookmaker_id'], 'handicap_num' => $odds['handicap_num'],'odds_type' => 0])->first();
         if(!$startOdds && is_array($odds)){
             Ftotalodds::create($odds);
         }
-        $endOdds = self::where(['match_id' => $odds['match_id'],'out_match_id' => $odds['out_match_id'],'bookmaker_id' => $odds['bookmaker_id']])->orderBy('updated_at','desc')->first()->toArray();
+        $endOdds = self::where(['match_id' => $odds['match_id'],'out_match_id' => $odds['out_match_id'],'bookmaker_id' => $odds['bookmaker_id'],'odds_type' => 1])->orderBy('updated_at','desc')->first()->toArray();
         if($endOdds['updated_at'] >= $eodds['updated_at']){
             return false;
         }
 
         if(!$endOdds || $endOdds['over'] != $eodds['over'] || $endOdds['under'] != $eodds['under'] || $endOdds['handicap_num'] != $eodds['handicap_num']){
             if(is_array($eodds)){
+                $eodds['odds_type'] = 1;
                 Ftotalodds::create($eodds);
                 return true;
             }else{

@@ -35,3 +35,4 @@ $router->get('/api/future_match','FmatchController@future_match');
 $router->get('/api/match_lineup','FmatchController@match_lineup');
 
 $router->get('/api/getOddsList','FoddsController@odds_list');
+$router->get('/api/getHandOddsList','FhandoddsController@odds_list');

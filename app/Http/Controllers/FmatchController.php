@@ -261,4 +261,55 @@ class FmatchController extends Controller
         return ['code' => 1,'success' => true,'list' => $match, 'sysTime' => date('Y-m-d H:i:s')];
     }
 
+    // 推荐比赛
+    public function recommend_list(Request $request) {
+        $match_type = $request->input('match_type') ? $request->input('match_type') : 0; //比赛类型 0：足球 1：篮球
+        $ret = [
+            'code' => 1,
+            'success' => true,
+            'message' => '成功',
+            'sysTime' => date('Y-m-d H:i:s'),
+            'list' => []
+        ];
+        if ($match_type == 0) {
+            $match_map = [];
+            for ($i = 2; $i <= 24; $i ++) {
+                $time = date('Y-m-d H:i:s', strtotime('+'.$i.' hours'));
+                $match_map = Fmatch::where('match_time', '<=', $time)->whereIn('match_state', [0, 1, 2, 3, 4, 5])->orderBy('match_time', 'asc')->limit(30)->get();
+                if ($match_map) {
+                    $match_map = $match_map->toArray();
+                    break;
+                }
+            }
+            if ($match_map) {
+                $home_id_map = array_unique(array_column($match_map, 'home_id'));
+                $guest_id_map = array_unique(array_column($match_map, 'guest_id'));
+                $team_id_map = array_unique(array_merge($home_id_map, $guest_id_map));
+                $team_data = Fteam::whereIn('team_id', $team_id_map)->get(['team_id', 'logo_path'])->toArray();
+                $team_map = array_column($team_data, 'logo_path', 'team_id');
+                foreach ($match_map as $key => $val) {
+                    $start_time = $val['match_time'];
+                    $event_data = Fevent::where('match_id', $val['match_id'])->first();
+                    if ($event_data) {
+                        $start_time = $event_data->toArray()['start_time'];
+                    }
+                    $ret['list'][] = [
+                        'match_id' => $val['match_id'],
+                        'home_name' => $val['home_name'],
+                        'guest_name' => $val['guest_name'],
+                        'match_state' => $val['match_state'],
+                        'half_score' => $val['half_score'],
+                        'score' => $val['score'],
+                        'league_name' => $val['league_name'],
+                        'match_time' => $val['match_time'],
+                        'start_time' => $start_time,
+                        'home_logo' => $team_map[$val['home_id']],
+                        'guest_logo' => $team_map[$val['guest_id']],
+                    ];
+                }
+            }
+            return $ret;
+        }
+    }
+
 }

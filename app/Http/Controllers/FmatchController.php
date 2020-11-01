@@ -23,6 +23,8 @@ class FmatchController extends Controller
         $date = date('Y-m-d');
         $match_time = $request->input('match_time') ? $request->input('match_time') : $date;
         $league_id = $request->input('league_id') ? $request->input('league_id') : false;
+        $match_state = $request->input('match_state') ? $request->input('match_state') : 0;
+        $match_type = $request->input('matchType') ? $request->input('matchType') : 0; // 0足球 1篮球
         $dateMap = [
             date("Y-m-d",strtotime("-1 day"))
         ];
@@ -49,17 +51,45 @@ class FmatchController extends Controller
                 '-13' => '中断',
                 '-14' => '推迟',
             ],
-            'leagueList' => []
+            'leagueList' => [],
+            'list' => []
         ];
-        $fmatch = Fmatch::where('match_time', 'like', $match_time.'%');
-        if ($league_id) {
-            $fmatch = $fmatch->whereIn('league_id', explode(',', $league_id));
-        }
-        $match_map = $fmatch->orderBy('match_time', 'asc')->select('match_id','league_id','season_id','league_name','match_time','home_name','guest_name','home_id','guest_id','match_state','half_score','score','home_red','guest_red','home_yellow','guest_yellow','home_corner','guest_corner')->get()->toarray();
-        $res['list'] = $match_map;
-        if (count($match_map) > 0) {
-            $leagueMap = Fmatch::where('match_time', 'like', $match_time.'%')->get(['league_name'])->toArray();
-            $res['leagueList'] = array_unique(array_column($leagueMap, 'league_name'));
+        if ($match_type == 0) {
+            $fmatch = Fmatch::where('match_time', 'like', $match_time . '%');
+            if ($league_id) {
+                $fmatch = $fmatch->whereIn('league_id', explode(',', $league_id));
+            }
+            // 进行中
+            if ($match_state == 1) {
+                $fmatch = $fmatch->whereIn('match_state', [1, 2, 3, 4, 5]);
+            }
+            // 未开赛
+            if ($match_state == 2) {
+                $fmatch = $fmatch->where('match_state', 0);
+            }
+            if ($match_state == 3) {
+                $fmatch = $fmatch->where('match_state', '-1');
+            }
+            $match_map = $fmatch->orderBy('match_time', 'asc')->select('match_id', 'league_id', 'season_id', 'league_name', 'match_time', 'home_name', 'guest_name', 'home_id', 'guest_id', 'match_state', 'half_score', 'score', 'home_red', 'guest_red', 'home_yellow', 'guest_yellow', 'home_corner', 'guest_corner', 'home_rank', 'guest_rank')->get();
+            if (!$match_map) {
+                $res['list'] = [];
+                return $res;
+            }
+            $match_map = $match_map->toarray();
+            $home_id_map = array_unique(array_column($match_map, 'home_id'));
+            $guest_id_map = array_unique(array_column($match_map, 'guest_id'));
+            $team_id_map = array_unique(array_merge($home_id_map, $guest_id_map));
+            $team_data = Fteam::whereIn('team_id', $team_id_map)->get(['team_id', 'logo_path'])->toArray();
+            $team_map = array_column($team_data, 'logo_path', 'team_id');
+            foreach ($match_map as $k => $v) {
+                $match_map[$k]['home_logo'] = isset($team_map[$v['home_id']]) ? $team_map[$v['home_id']] : '';
+                $match_map[$k]['guest_logo'] = isset($team_map[$v['guest_id']]) ? $team_map[$v['guest_id']] : '';
+            }
+            $res['list'] = $match_map;
+            if (count($match_map) > 0) {
+                $leagueMap = Fmatch::where('match_time', 'like', $match_time . '%')->get(['league_name'])->toArray();
+                $res['leagueList'] = array_unique(array_column($leagueMap, 'league_name'));
+            }
         }
         return $res;
     }
@@ -122,7 +152,7 @@ class FmatchController extends Controller
             }
 
         //首发阵容
-            $matchLineup = FmatchLineup::join('d_player','d_player.id', '=', 'player_id')->where('d_match_lineup.match_id',  $match_id)->select('d_match_lineup.subsitute','d_match_lineup.is_host','d_match_lineup.player_name','d_match_lineup.player_number','d_player.logo','d_match_lineup.player_id')->get()->toarray();
+            $matchLineup = FmatchLineup::join('d_player','d_player.id', '=', 'player_id')->where('d_match_lineup.match_id',  $match_id)->select('d_match_lineup.subsitute','d_match_lineup.is_host','d_match_lineup.player_name','d_match_lineup.player_number','d_player.logo','d_match_lineup.player_id', 'd_match_lineup.pos')->get()->toarray();
            // dd($matchLineup);
             foreach ($matchLineup as $k => $v) {
                 //主队收发

@@ -252,6 +252,12 @@ class FmatchController extends Controller
         $team_guest = Fteam::where('team_id',$match[0]['guest_id'])->select('logo_path')->get()->toarray();
         $match[0]['home_logo'] = $team_home[0]['logo_path'];
         $match[0]['guest_logo'] = $team_guest[0]['logo_path'];
+        $event_data = Fevent::where('match_id', $match[0]['match_id'])->first();
+        if (!$event_data) {
+            $match_map[0]['start_time'] = $match[0]['match_time'];
+        } else {
+            $match_map[0]['start_time'] = $event_data->toArray()['start_time'];
+        }
         return ['code' => 1,'success' => true,'list' => $match, 'sysTime' => date('Y-m-d H:i:s')];
     }
 

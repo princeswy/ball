@@ -36,3 +36,5 @@ $router->get('/api/match_lineup','FmatchController@match_lineup');
 
 $router->get('/api/getOddsList','FoddsController@odds_list');
 $router->get('/api/getHandOddsList','FhandoddsController@odds_list');
+$router->get('/api/getMatchDetail','FdetailController@index');
+$router->get('/api/getMatchStatis','FstatisController@index');

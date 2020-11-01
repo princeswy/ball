@@ -20,9 +20,9 @@ class Feventdetail extends Model
     public $timestamps = false;
 
     public static $event_type = array(
-        1 => '入球', 2 => '点球', 3 => '乌龙',
-        4 => '黄牌', 5 => '红牌', 6 => '两黄变红',
-        7 => '换人',
+        1 => '入球', 2 => '红牌', 3 => '黄牌',
+        7 => '点球', 8 => '乌龙', 9 => '两黄变红',
+        11 => '换人', 12 => '射失点球'
     );
 
 
@@ -35,6 +35,7 @@ class Feventdetail extends Model
             $out_match_id = $val->matchId;
             $match_data = Fmatch::where('out_match_id', $out_match_id)->first();
             $match_id = $match_data ? $match_data->toArray()['match_id'] : 0;
+//            $map = [];
             foreach ($val->event as $e_key => $e_val) {
                 $data = [
                     'match_id' => $match_id,
@@ -52,8 +53,9 @@ class Feventdetail extends Model
                 } else {
                     $data['is_host'] = 0;
                 }
+                $event_data[] = $data;
             }
-            $event_data[] = $data;
+//            $event_data[] = $map;
         }
         return $event_data;
     }

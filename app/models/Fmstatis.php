@@ -19,6 +19,7 @@ class Fmstatis extends Model
     protected $primaryKey = 'id';
 //    public $timestamps = false;
 
+
     public static function handleData ($out_data) {
         if (!$out_data) {
             return false;

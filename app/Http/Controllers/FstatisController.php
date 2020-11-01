@@ -16,7 +16,6 @@ class FstatisController extends Controller
         $ret = [
             'code' => 1,
             'message' => '成功',
-            'typeList' => Feventdetail::$event_type,
             'data' => [],
             'success' => true
         ];

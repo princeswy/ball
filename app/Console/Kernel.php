@@ -89,5 +89,7 @@ class Kernel extends ConsoleKernel
         $schedule->command('fmatch:hOddsTask --odds_type=2')->everyThirtyMinutes()->withoutOverlapping();
         # 比赛技术统计
         $schedule->command('fmatch:matchDetail')->everyMinute()->withoutOverlapping();
+        # 欧赔
+        $schedule->command('fmatch:liveScore')->cron('*/2 * * * *')->withoutOverlapping();
     }
 }

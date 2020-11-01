@@ -23,7 +23,7 @@ class FragmentHandlerTest extends TestCase
 {
     private $requestStack;
 
-    protected function setUp(): void
+    protected function setUp()
     {
         $this->requestStack = $this->getMockBuilder('Symfony\\Component\\HttpFoundation\\RequestStack')
             ->disableOriginalConstructor()
@@ -82,7 +82,7 @@ class FragmentHandlerTest extends TestCase
         ;
 
         if ($arguments) {
-            $e->with(...$arguments);
+            \call_user_func_array([$e, 'with'], $arguments);
         }
 
         $handler = new FragmentHandler($this->requestStack);

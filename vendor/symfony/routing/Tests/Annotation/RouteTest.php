@@ -19,13 +19,7 @@ class RouteTest extends TestCase
     public function testInvalidRouteParameter()
     {
         $this->expectException('BadMethodCallException');
-        $route = new Route(['foo' => 'bar']);
-    }
-
-    public function testTryingToSetLocalesDirectly()
-    {
-        $this->expectException('BadMethodCallException');
-        $route = new Route(['locales' => ['nl' => 'bar']]);
+        new Route(['foo' => 'bar']);
     }
 
     /**
@@ -49,7 +43,6 @@ class RouteTest extends TestCase
             ['methods', ['GET', 'POST'], 'getMethods'],
             ['host', '{locale}.example.com', 'getHost'],
             ['condition', 'context.getMethod() == "GET"', 'getCondition'],
-            ['value', ['nl' => '/hier', 'en' => '/here'], 'getLocalizedPaths'],
         ];
     }
 }

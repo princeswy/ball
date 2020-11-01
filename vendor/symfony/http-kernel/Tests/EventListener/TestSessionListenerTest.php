@@ -12,11 +12,12 @@
 namespace Symfony\Component\HttpKernel\Tests\EventListener;
 
 use PHPUnit\Framework\TestCase;
+use Symfony\Component\DependencyInjection\ServiceSubscriberInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Session\SessionInterface;
-use Symfony\Component\HttpKernel\Event\RequestEvent;
-use Symfony\Component\HttpKernel\Event\ResponseEvent;
+use Symfony\Component\HttpKernel\Event\FilterResponseEvent;
+use Symfony\Component\HttpKernel\Event\GetResponseEvent;
 use Symfony\Component\HttpKernel\EventListener\SessionListener;
 use Symfony\Component\HttpKernel\EventListener\TestSessionListener;
 use Symfony\Component\HttpKernel\HttpKernelInterface;
@@ -40,7 +41,7 @@ class TestSessionListenerTest extends TestCase
      */
     private $session;
 
-    protected function setUp(): void
+    protected function setUp()
     {
         $this->listener = $this->getMockForAbstractClass('Symfony\Component\HttpKernel\EventListener\AbstractTestSessionListener');
         $this->session = $this->getSession();
@@ -95,9 +96,9 @@ class TestSessionListenerTest extends TestCase
         $this->sessionIsEmpty();
         $this->fixSessionId('456');
 
-        $kernel = $this->getMockBuilder(HttpKernelInterface::class)->getMock();
+        $kernel = $this->getMockBuilder('Symfony\Component\HttpKernel\HttpKernelInterface')->getMock();
         $request = Request::create('/', 'GET', [], ['MOCKSESSID' => '123']);
-        $event = new RequestEvent($kernel, $request, HttpKernelInterface::MASTER_REQUEST);
+        $event = new GetResponseEvent($kernel, $request, HttpKernelInterface::MASTER_REQUEST);
         $this->listener->onKernelRequest($event);
 
         $response = $this->filterResponse(new Request(), HttpKernelInterface::MASTER_REQUEST);
@@ -114,9 +115,9 @@ class TestSessionListenerTest extends TestCase
         $this->sessionIsEmpty();
         $this->fixSessionId('456');
 
-        $kernel = $this->getMockBuilder(HttpKernelInterface::class)->getMock();
+        $kernel = $this->getMockBuilder('Symfony\Component\HttpKernel\HttpKernelInterface')->getMock();
         $request = Request::create('/', 'GET', [], ['MOCKSESSID' => '123']);
-        $event = new RequestEvent($kernel, $request, HttpKernelInterface::MASTER_REQUEST);
+        $event = new GetResponseEvent($kernel, $request, HttpKernelInterface::MASTER_REQUEST);
         $this->listener->onKernelRequest($event);
 
         $response = new Response('', 200, ['Set-Cookie' => $existing]);
@@ -143,22 +144,21 @@ class TestSessionListenerTest extends TestCase
         $this->filterResponse(new Request());
     }
 
-    public function testDoesNotThrowIfRequestDoesNotHaveASession()
+    public function testDoesNotImplementServiceSubscriberInterface()
     {
-        $kernel = $this->getMockBuilder(HttpKernelInterface::class)->getMock();
-        $event = new ResponseEvent($kernel, new Request(), HttpKernelInterface::MASTER_REQUEST, new Response());
-
-        $this->listener->onKernelResponse($event);
-
-        $this->assertTrue(true);
+        $this->assertTrue(interface_exists(ServiceSubscriberInterface::class));
+        $this->assertTrue(class_exists(SessionListener::class));
+        $this->assertTrue(class_exists(TestSessionListener::class));
+        $this->assertFalse(is_subclass_of(SessionListener::class, ServiceSubscriberInterface::class), 'Implementing ServiceSubscriberInterface would create a dep on the DI component, which eg Silex cannot afford');
+        $this->assertFalse(is_subclass_of(TestSessionListener::class, ServiceSubscriberInterface::class, 'Implementing ServiceSubscriberInterface would create a dep on the DI component, which eg Silex cannot afford'));
     }
 
     private function filterResponse(Request $request, $type = HttpKernelInterface::MASTER_REQUEST, Response $response = null)
     {
         $request->setSession($this->session);
         $response = $response ?: new Response();
-        $kernel = $this->getMockBuilder(HttpKernelInterface::class)->getMock();
-        $event = new ResponseEvent($kernel, $request, $type, $response);
+        $kernel = $this->getMockBuilder('Symfony\Component\HttpKernel\HttpKernelInterface')->getMock();
+        $event = new FilterResponseEvent($kernel, $request, $type, $response);
 
         $this->listener->onKernelResponse($event);
 

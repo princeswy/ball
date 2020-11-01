@@ -52,9 +52,7 @@ class OutputFormatterStyle implements OutputFormatterStyleInterface
 
     private $foreground;
     private $background;
-    private $href;
     private $options = [];
-    private $handlesHrefGracefully;
 
     /**
      * Initializes output formatter style.
@@ -63,7 +61,7 @@ class OutputFormatterStyle implements OutputFormatterStyleInterface
      * @param string|null $background The style background color name
      * @param array       $options    The style options
      */
-    public function __construct(string $foreground = null, string $background = null, array $options = [])
+    public function __construct($foreground = null, $background = null, array $options = [])
     {
         if (null !== $foreground) {
             $this->setForeground($foreground);
@@ -88,7 +86,7 @@ class OutputFormatterStyle implements OutputFormatterStyleInterface
         }
 
         if (!isset(static::$availableForegroundColors[$color])) {
-            throw new InvalidArgumentException(sprintf('Invalid foreground color specified: "%s". Expected one of (%s)', $color, implode(', ', array_keys(static::$availableForegroundColors))));
+            throw new InvalidArgumentException(sprintf('Invalid foreground color specified: "%s". Expected one of (%s).', $color, implode(', ', array_keys(static::$availableForegroundColors))));
         }
 
         $this->foreground = static::$availableForegroundColors[$color];
@@ -106,15 +104,10 @@ class OutputFormatterStyle implements OutputFormatterStyleInterface
         }
 
         if (!isset(static::$availableBackgroundColors[$color])) {
-            throw new InvalidArgumentException(sprintf('Invalid background color specified: "%s". Expected one of (%s)', $color, implode(', ', array_keys(static::$availableBackgroundColors))));
+            throw new InvalidArgumentException(sprintf('Invalid background color specified: "%s". Expected one of (%s).', $color, implode(', ', array_keys(static::$availableBackgroundColors))));
         }
 
         $this->background = static::$availableBackgroundColors[$color];
-    }
-
-    public function setHref(string $url): void
-    {
-        $this->href = $url;
     }
 
     /**
@@ -123,7 +116,7 @@ class OutputFormatterStyle implements OutputFormatterStyleInterface
     public function setOption($option)
     {
         if (!isset(static::$availableOptions[$option])) {
-            throw new InvalidArgumentException(sprintf('Invalid option specified: "%s". Expected one of (%s)', $option, implode(', ', array_keys(static::$availableOptions))));
+            throw new InvalidArgumentException(sprintf('Invalid option specified: "%s". Expected one of (%s).', $option, implode(', ', array_keys(static::$availableOptions))));
         }
 
         if (!\in_array(static::$availableOptions[$option], $this->options)) {
@@ -137,7 +130,7 @@ class OutputFormatterStyle implements OutputFormatterStyleInterface
     public function unsetOption($option)
     {
         if (!isset(static::$availableOptions[$option])) {
-            throw new InvalidArgumentException(sprintf('Invalid option specified: "%s". Expected one of (%s)', $option, implode(', ', array_keys(static::$availableOptions))));
+            throw new InvalidArgumentException(sprintf('Invalid option specified: "%s". Expected one of (%s).', $option, implode(', ', array_keys(static::$availableOptions))));
         }
 
         $pos = array_search(static::$availableOptions[$option], $this->options);
@@ -166,10 +159,6 @@ class OutputFormatterStyle implements OutputFormatterStyleInterface
         $setCodes = [];
         $unsetCodes = [];
 
-        if (null === $this->handlesHrefGracefully) {
-            $this->handlesHrefGracefully = 'JetBrains-JediTerm' !== getenv('TERMINAL_EMULATOR') && !getenv('KONSOLE_VERSION');
-        }
-
         if (null !== $this->foreground) {
             $setCodes[] = $this->foreground['set'];
             $unsetCodes[] = $this->foreground['unset'];
@@ -178,14 +167,11 @@ class OutputFormatterStyle implements OutputFormatterStyleInterface
             $setCodes[] = $this->background['set'];
             $unsetCodes[] = $this->background['unset'];
         }
-
-        foreach ($this->options as $option) {
-            $setCodes[] = $option['set'];
-            $unsetCodes[] = $option['unset'];
-        }
-
-        if (null !== $this->href && $this->handlesHrefGracefully) {
-            $text = "\033]8;;$this->href\033\\$text\033]8;;\033\\";
+        if (\count($this->options)) {
+            foreach ($this->options as $option) {
+                $setCodes[] = $option['set'];
+                $unsetCodes[] = $option['unset'];
+            }
         }
 
         if (0 === \count($setCodes)) {

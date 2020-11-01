@@ -14,14 +14,14 @@ namespace Symfony\Component\HttpKernel\Tests\EventListener;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\EventDispatcher\EventDispatcher;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpKernel\Event\RequestEvent;
+use Symfony\Component\HttpKernel\Event\GetResponseEvent;
 use Symfony\Component\HttpKernel\EventListener\ValidateRequestListener;
 use Symfony\Component\HttpKernel\HttpKernelInterface;
 use Symfony\Component\HttpKernel\KernelEvents;
 
 class ValidateRequestListenerTest extends TestCase
 {
-    protected function tearDown(): void
+    protected function tearDown()
     {
         Request::setTrustedProxies([], -1);
     }
@@ -39,8 +39,8 @@ class ValidateRequestListenerTest extends TestCase
         $request->headers->set('X_FORWARDED_FOR', '3.3.3.3');
 
         $dispatcher->addListener(KernelEvents::REQUEST, [new ValidateRequestListener(), 'onKernelRequest']);
-        $event = new RequestEvent($kernel, $request, HttpKernelInterface::MASTER_REQUEST);
+        $event = new GetResponseEvent($kernel, $request, HttpKernelInterface::MASTER_REQUEST);
 
-        $dispatcher->dispatch($event, KernelEvents::REQUEST);
+        $dispatcher->dispatch(KernelEvents::REQUEST, $event);
     }
 }

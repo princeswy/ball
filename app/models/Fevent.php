@@ -24,7 +24,7 @@ class Fevent extends Model
     public static $match_score_key = 'match_fscore';
     public static $score_source_key = 'score_source';
 
-    public static $live_score_key = 'deal_live_score_worker';
+    public static $live_score_key = 'fmatch_score';
     public static $score_change_key = 'score_change';
 
     public static $matchsource_score_key = 'match_score_';
@@ -154,7 +154,15 @@ class Fevent extends Model
     }
 
     public static function write_score($data){
-        Predis::lpush('push_jz', json_encode($data), 11);
+//        Predis::set('aa', json_encode($data));
+//        dd(json_encode($data));
+//        $redis = Predis::connection('default');
+//        $redis->set('a', 1);
+        Predis::lpush(self::$live_score_key, json_encode($data));
 //        Predis::lpush(self::$live_score_key, json_encode($data));
+    }
+
+    public static function get_score() {
+        return Predis::rpop(self::$live_score_key);
     }
 }

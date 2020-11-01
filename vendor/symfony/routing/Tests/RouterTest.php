@@ -22,7 +22,7 @@ class RouterTest extends TestCase
 
     private $loader = null;
 
-    protected function setUp(): void
+    protected function setUp()
     {
         $this->loader = $this->getMockBuilder('Symfony\Component\Config\Loader\LoaderInterface')->getMock();
         $this->router = new Router($this->loader, 'routing.yml');
@@ -87,9 +87,12 @@ class RouterTest extends TestCase
         $this->assertSame($routeCollection, $this->router->getRouteCollection());
     }
 
-    public function testMatcherIsCreatedIfCacheIsNotConfigured()
+    /**
+     * @dataProvider provideMatcherOptionsPreventingCaching
+     */
+    public function testMatcherIsCreatedIfCacheIsNotConfigured($option)
     {
-        $this->router->setOption('cache_dir', null);
+        $this->router->setOption($option, null);
 
         $this->loader->expects($this->once())
             ->method('load')->with('routing.yml', null)
@@ -98,15 +101,34 @@ class RouterTest extends TestCase
         $this->assertInstanceOf('Symfony\\Component\\Routing\\Matcher\\UrlMatcher', $this->router->getMatcher());
     }
 
-    public function testGeneratorIsCreatedIfCacheIsNotConfigured()
+    public function provideMatcherOptionsPreventingCaching()
     {
-        $this->router->setOption('cache_dir', null);
+        return [
+            ['cache_dir'],
+            ['matcher_cache_class'],
+        ];
+    }
+
+    /**
+     * @dataProvider provideGeneratorOptionsPreventingCaching
+     */
+    public function testGeneratorIsCreatedIfCacheIsNotConfigured($option)
+    {
+        $this->router->setOption($option, null);
 
         $this->loader->expects($this->once())
             ->method('load')->with('routing.yml', null)
             ->willReturn(new RouteCollection());
 
         $this->assertInstanceOf('Symfony\\Component\\Routing\\Generator\\UrlGenerator', $this->router->getGenerator());
+    }
+
+    public function provideGeneratorOptionsPreventingCaching()
+    {
+        return [
+            ['cache_dir'],
+            ['generator_cache_class'],
+        ];
     }
 
     public function testMatchRequestWithUrlMatcherInterface()

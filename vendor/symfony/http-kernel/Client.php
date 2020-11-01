@@ -11,7 +11,7 @@
 
 namespace Symfony\Component\HttpKernel;
 
-use Symfony\Component\BrowserKit\AbstractBrowser;
+use Symfony\Component\BrowserKit\Client as BaseClient;
 use Symfony\Component\BrowserKit\CookieJar;
 use Symfony\Component\BrowserKit\History;
 use Symfony\Component\BrowserKit\Request as DomRequest;
@@ -21,14 +21,14 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
 /**
- * Client simulates a browser and makes requests to an HttpKernel instance.
+ * Client simulates a browser and makes requests to a Kernel object.
  *
- * @method Request  getRequest()  A Request instance
- * @method Response getResponse() A Response instance
+ * @author Fabien Potencier <fabien@symfony.com>
  *
- * @deprecated since Symfony 4.3, use HttpKernelBrowser instead.
+ * @method Request|null  getRequest()  A Request instance
+ * @method Response|null getResponse() A Response instance
  */
-class Client extends AbstractBrowser
+class Client extends BaseClient
 {
     protected $kernel;
     private $catchExceptions = true;
@@ -169,7 +169,8 @@ EOF;
                         '',
                         $value->getClientOriginalName(),
                         $value->getClientMimeType(),
-                        UPLOAD_ERR_INI_SIZE,
+                        0,
+                        \UPLOAD_ERR_INI_SIZE,
                         true
                     );
                 } else {
@@ -177,6 +178,7 @@ EOF;
                         $value->getPathname(),
                         $value->getClientOriginalName(),
                         $value->getClientMimeType(),
+                        $value->getClientSize(),
                         $value->getError(),
                         true
                     );

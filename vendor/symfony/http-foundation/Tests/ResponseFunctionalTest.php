@@ -20,7 +20,7 @@ class ResponseFunctionalTest extends TestCase
 {
     private static $server;
 
-    public static function setUpBeforeClass(): void
+    public static function setUpBeforeClass()
     {
         $spec = [
             1 => ['file', '/dev/null', 'w'],
@@ -32,7 +32,7 @@ class ResponseFunctionalTest extends TestCase
         sleep(1);
     }
 
-    public static function tearDownAfterClass(): void
+    public static function tearDownAfterClass()
     {
         if (self::$server) {
             proc_terminate(self::$server);
@@ -45,6 +45,10 @@ class ResponseFunctionalTest extends TestCase
      */
     public function testCookie($fixture)
     {
+        if (\PHP_VERSION_ID >= 80000 && 'cookie_max_age' === $fixture) {
+            $this->markTestSkipped('This fixture produces a fatal error on PHP 8.');
+        }
+
         $result = file_get_contents(sprintf('http://localhost:8054/%s.php', $fixture));
         $this->assertStringMatchesFormatFile(__DIR__.sprintf('/Fixtures/response-functional/%s.expected', $fixture), $result);
     }
@@ -52,7 +56,7 @@ class ResponseFunctionalTest extends TestCase
     public function provideCookie()
     {
         foreach (glob(__DIR__.'/Fixtures/response-functional/*.php') as $file) {
-            yield [pathinfo($file, PATHINFO_FILENAME)];
+            yield [pathinfo($file, \PATHINFO_FILENAME)];
         }
     }
 }

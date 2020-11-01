@@ -20,12 +20,13 @@ class InputDefinitionTest extends TestCase
 {
     protected static $fixtures;
 
+    protected $multi;
     protected $foo;
     protected $bar;
     protected $foo1;
     protected $foo2;
 
-    public static function setUpBeforeClass(): void
+    public static function setUpBeforeClass()
     {
         self::$fixtures = __DIR__.'/../Fixtures/';
     }
@@ -356,9 +357,8 @@ class InputDefinitionTest extends TestCase
 
             [new InputDefinition([new InputArgument('foo', InputArgument::REQUIRED)]), '<foo>', 'puts arguments in angle brackets'],
             [new InputDefinition([new InputArgument('foo')]), '[<foo>]', 'puts optional arguments in square brackets'],
-            [new InputDefinition([new InputArgument('foo'), new InputArgument('bar')]), '[<foo> [<bar>]]', 'chains optional arguments inside brackets'],
-            [new InputDefinition([new InputArgument('foo', InputArgument::IS_ARRAY)]), '[<foo>...]', 'uses an ellipsis for array arguments'],
-            [new InputDefinition([new InputArgument('foo', InputArgument::REQUIRED | InputArgument::IS_ARRAY)]), '<foo>...', 'uses an ellipsis for required array arguments'],
+            [new InputDefinition([new InputArgument('foo', InputArgument::IS_ARRAY)]), '[<foo>]...', 'uses an ellipsis for array arguments'],
+            [new InputDefinition([new InputArgument('foo', InputArgument::REQUIRED | InputArgument::IS_ARRAY)]), '<foo> (<foo>)...', 'uses parenthesis and ellipsis for required array arguments'],
 
             [new InputDefinition([new InputOption('foo'), new InputArgument('foo', InputArgument::REQUIRED)]), '[--foo] [--] <foo>', 'puts [--] between options and arguments'],
         ];

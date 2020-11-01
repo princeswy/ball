@@ -44,7 +44,7 @@ class BinaryFileResponse extends Response
      * @param bool                $autoEtag           Whether the ETag header should be automatically set
      * @param bool                $autoLastModified   Whether the Last-Modified header should be automatically set
      */
-    public function __construct($file, int $status = 200, array $headers = [], bool $public = true, string $contentDisposition = null, bool $autoEtag = false, bool $autoLastModified = true)
+    public function __construct($file, $status = 200, $headers = [], $public = true, $contentDisposition = null, $autoEtag = false, $autoLastModified = true)
     {
         parent::__construct(null, $status, $headers);
 
@@ -217,50 +217,58 @@ class BinaryFileResponse extends Response
             }
             if ('x-accel-redirect' === strtolower($type)) {
                 // Do X-Accel-Mapping substitutions.
-                // @link http://wiki.nginx.org/X-accel#X-Accel-Redirect
-                $parts = HeaderUtils::split($request->headers->get('X-Accel-Mapping', ''), ',=');
-                foreach ($parts as $part) {
-                    list($pathPrefix, $location) = $part;
-                    if (substr($path, 0, \strlen($pathPrefix)) === $pathPrefix) {
-                        $path = $location.substr($path, \strlen($pathPrefix));
-                        // Only set X-Accel-Redirect header if a valid URI can be produced
-                        // as nginx does not serve arbitrary file paths.
-                        $this->headers->set($type, $path);
-                        $this->maxlen = 0;
-                        break;
+                // @link https://www.nginx.com/resources/wiki/start/topics/examples/x-accel/#x-accel-redirect
+                foreach (explode(',', $request->headers->get('X-Accel-Mapping', '')) as $mapping) {
+                    $mapping = explode('=', $mapping, 2);
+
+                    if (2 === \count($mapping)) {
+                        $pathPrefix = trim($mapping[0]);
+                        $location = trim($mapping[1]);
+
+                        if (substr($path, 0, \strlen($pathPrefix)) === $pathPrefix) {
+                            $path = $location.substr($path, \strlen($pathPrefix));
+                            // Only set X-Accel-Redirect header if a valid URI can be produced
+                            // as nginx does not serve arbitrary file paths.
+                            $this->headers->set($type, $path);
+                            $this->maxlen = 0;
+                            break;
+                        }
                     }
                 }
             } else {
                 $this->headers->set($type, $path);
                 $this->maxlen = 0;
             }
-        } elseif ($request->headers->has('Range')) {
+        } elseif ($request->headers->has('Range') && $request->isMethod('GET')) {
             // Process the range headers.
             if (!$request->headers->has('If-Range') || $this->hasValidIfRangeHeader($request->headers->get('If-Range'))) {
                 $range = $request->headers->get('Range');
 
-                list($start, $end) = explode('-', substr($range, 6), 2) + [0];
+                if (0 === strpos($range, 'bytes=')) {
+                    list($start, $end) = explode('-', substr($range, 6), 2) + [0];
 
-                $end = ('' === $end) ? $fileSize - 1 : (int) $end;
+                    $end = ('' === $end) ? $fileSize - 1 : (int) $end;
 
-                if ('' === $start) {
-                    $start = $fileSize - $end;
-                    $end = $fileSize - 1;
-                } else {
-                    $start = (int) $start;
-                }
+                    if ('' === $start) {
+                        $start = $fileSize - $end;
+                        $end = $fileSize - 1;
+                    } else {
+                        $start = (int) $start;
+                    }
 
-                if ($start <= $end) {
-                    if ($start < 0 || $end > $fileSize - 1) {
-                        $this->setStatusCode(416);
-                        $this->headers->set('Content-Range', sprintf('bytes */%s', $fileSize));
-                    } elseif (0 !== $start || $end !== $fileSize - 1) {
-                        $this->maxlen = $end < $fileSize ? $end - $start + 1 : -1;
-                        $this->offset = $start;
+                    if ($start <= $end) {
+                        $end = min($end, $fileSize - 1);
+                        if ($start < 0 || $start > $end) {
+                            $this->setStatusCode(416);
+                            $this->headers->set('Content-Range', sprintf('bytes */%s', $fileSize));
+                        } elseif ($end - $start < $fileSize - 1) {
+                            $this->maxlen = $end < $fileSize ? $end - $start + 1 : -1;
+                            $this->offset = $start;
 
-                        $this->setStatusCode(206);
-                        $this->headers->set('Content-Range', sprintf('bytes %s-%s/%s', $start, $end, $fileSize));
-                        $this->headers->set('Content-Length', $end - $start + 1);
+                            $this->setStatusCode(206);
+                            $this->headers->set('Content-Range', sprintf('bytes %s-%s/%s', $start, $end, $fileSize));
+                            $this->headers->set('Content-Length', $end - $start + 1);
+                        }
                     }
                 }
             }
@@ -343,14 +351,14 @@ class BinaryFileResponse extends Response
     }
 
     /**
-     * If this is set to true, the file will be unlinked after the request is send
+     * If this is set to true, the file will be unlinked after the request is sent
      * Note: If the X-Sendfile header is used, the deleteFileAfterSend setting will not be used.
      *
      * @param bool $shouldDelete
      *
      * @return $this
      */
-    public function deleteFileAfterSend($shouldDelete = true)
+    public function deleteFileAfterSend($shouldDelete)
     {
         $this->deleteFileAfterSend = $shouldDelete;
 

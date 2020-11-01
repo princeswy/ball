@@ -18,7 +18,7 @@ use Symfony\Component\HttpKernel\Tests\Fixtures\ResettableService;
 
 class ServicesResetterTest extends TestCase
 {
-    protected function setUp(): void
+    protected function setUp()
     {
         ResettableService::$counter = 0;
         ClearableService::$counter = 0;

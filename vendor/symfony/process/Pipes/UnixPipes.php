@@ -26,11 +26,11 @@ class UnixPipes extends AbstractPipes
     private $ptyMode;
     private $haveReadSupport;
 
-    public function __construct(?bool $ttyMode, bool $ptyMode, $input, bool $haveReadSupport)
+    public function __construct($ttyMode, $ptyMode, $input, $haveReadSupport)
     {
-        $this->ttyMode = $ttyMode;
-        $this->ptyMode = $ptyMode;
-        $this->haveReadSupport = $haveReadSupport;
+        $this->ttyMode = (bool) $ttyMode;
+        $this->ptyMode = (bool) $ptyMode;
+        $this->haveReadSupport = (bool) $haveReadSupport;
 
         parent::__construct($input);
     }
@@ -118,7 +118,7 @@ class UnixPipes extends AbstractPipes
             $read[$type = array_search($pipe, $this->pipes, true)] = '';
 
             do {
-                $data = fread($pipe, self::CHUNK_SIZE);
+                $data = @fread($pipe, self::CHUNK_SIZE);
                 $read[$type] .= $data;
             } while (isset($data[0]) && ($close || isset($data[self::CHUNK_SIZE - 1])));
 

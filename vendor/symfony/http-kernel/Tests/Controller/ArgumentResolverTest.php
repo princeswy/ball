@@ -30,7 +30,7 @@ class ArgumentResolverTest extends TestCase
     /** @var ArgumentResolver */
     private static $resolver;
 
-    public static function setUpBeforeClass(): void
+    public static function setUpBeforeClass()
     {
         $factory = new ArgumentMetadataFactory();
 
@@ -152,6 +152,9 @@ class ArgumentResolverTest extends TestCase
         $this->assertEquals([$request], self::$resolver->getArguments($request, $controller), '->getArguments() injects the request when extended');
     }
 
+    /**
+     * @requires PHP 5.6
+     */
     public function testGetVariadicArguments()
     {
         $request = Request::create('/');
@@ -162,6 +165,9 @@ class ArgumentResolverTest extends TestCase
         $this->assertEquals(['foo', 'foo', 'bar'], self::$resolver->getArguments($request, $controller));
     }
 
+    /**
+     * @requires PHP 5.6
+     */
     public function testGetVariadicArgumentsWithoutArrayInRequest()
     {
         $this->expectException('InvalidArgumentException');
@@ -173,6 +179,9 @@ class ArgumentResolverTest extends TestCase
         self::$resolver->getArguments($request, $controller);
     }
 
+    /**
+     * @requires PHP 5.6
+     */
     public function testGetArgumentWithoutArray()
     {
         $this->expectException('InvalidArgumentException');
@@ -199,24 +208,30 @@ class ArgumentResolverTest extends TestCase
         self::$resolver->getArguments($request, $controller);
     }
 
+    /**
+     * @requires PHP 7.1
+     */
     public function testGetNullableArguments()
     {
         $request = Request::create('/');
         $request->attributes->set('foo', 'foo');
         $request->attributes->set('bar', new \stdClass());
-        $request->attributes->set('mandatory', 'mandatory');
+        $request->attributes->set('last', 'last');
         $controller = [new NullableController(), 'action'];
 
-        $this->assertEquals(['foo', new \stdClass(), 'value', 'mandatory'], self::$resolver->getArguments($request, $controller));
+        $this->assertEquals(['foo', new \stdClass(), 'value', 'last'], self::$resolver->getArguments($request, $controller));
     }
 
+    /**
+     * @requires PHP 7.1
+     */
     public function testGetNullableArgumentsWithDefaults()
     {
         $request = Request::create('/');
-        $request->attributes->set('mandatory', 'mandatory');
+        $request->attributes->set('last', 'last');
         $controller = [new NullableController(), 'action'];
 
-        $this->assertEquals([null, null, 'value', 'mandatory'], self::$resolver->getArguments($request, $controller));
+        $this->assertEquals([null, null, 'value', 'last'], self::$resolver->getArguments($request, $controller));
     }
 
     public function testGetSessionArguments()

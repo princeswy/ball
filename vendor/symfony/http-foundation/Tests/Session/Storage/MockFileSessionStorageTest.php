@@ -33,20 +33,20 @@ class MockFileSessionStorageTest extends TestCase
      */
     protected $storage;
 
-    protected function setUp(): void
+    protected function setUp()
     {
-        $this->sessionDir = sys_get_temp_dir().'/sftest';
+        $this->sessionDir = sys_get_temp_dir().'/sf2test';
         $this->storage = $this->getStorage();
     }
 
-    protected function tearDown(): void
+    protected function tearDown()
     {
+        array_map('unlink', glob($this->sessionDir.'/*'));
+        if (is_dir($this->sessionDir)) {
+            @rmdir($this->sessionDir);
+        }
         $this->sessionDir = null;
         $this->storage = null;
-        array_map('unlink', glob($this->sessionDir.'/*.session'));
-        if (is_dir($this->sessionDir)) {
-            rmdir($this->sessionDir);
-        }
     }
 
     public function testStart()

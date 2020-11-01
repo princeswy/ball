@@ -17,7 +17,6 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\DataCollector\DumpDataCollector;
 use Symfony\Component\VarDumper\Cloner\Data;
 use Symfony\Component\VarDumper\Dumper\CliDumper;
-use Symfony\Component\VarDumper\Server\Connection;
 
 /**
  * @author Nicolas Grekas <p@tchwork.com>
@@ -52,27 +51,9 @@ class DumpDataCollectorTest extends TestCase
         ];
         $this->assertEquals($xDump, $dump);
 
-        $this->assertStringMatchesFormat('%a;a:%d:{i:0;a:5:{s:4:"data";%c:39:"Symfony\Component\VarDumper\Cloner\Data":%a', serialize($collector));
+        $this->assertStringMatchesFormat('a:3:{i:0;a:5:{s:4:"data";%c:39:"Symfony\Component\VarDumper\Cloner\Data":%a', $collector->serialize());
         $this->assertSame(0, $collector->getDumpsCount());
-        $this->assertSame("O:60:\"Symfony\Component\HttpKernel\DataCollector\DumpDataCollector\":1:{s:7:\"\0*\0data\";a:2:{i:0;b:0;i:1;s:5:\"UTF-8\";}}", serialize($collector));
-    }
-
-    public function testDumpWithServerConnection()
-    {
-        $data = new Data([[123]]);
-
-        // Server is up, server dumper is used
-        $serverDumper = $this->getMockBuilder(Connection::class)->disableOriginalConstructor()->getMock();
-        $serverDumper->expects($this->once())->method('write')->willReturn(true);
-
-        $collector = new DumpDataCollector(null, null, null, null, $serverDumper);
-        $collector->dump($data);
-
-        // Collect doesn't re-trigger dump
-        ob_start();
-        $collector->collect(new Request(), new Response());
-        $this->assertEmpty(ob_get_clean());
-        $this->assertStringMatchesFormat('%a;a:%d:{i:0;a:5:{s:4:"data";%c:39:"Symfony\Component\VarDumper\Cloner\Data":%a', serialize($collector));
+        $this->assertSame('a:2:{i:0;b:0;i:1;s:5:"UTF-8";}', $collector->serialize());
     }
 
     public function testCollectDefault()
@@ -90,7 +71,7 @@ class DumpDataCollectorTest extends TestCase
 
         $this->assertSame("DumpDataCollectorTest.php on line {$line}:\n123\n", $output);
         $this->assertSame(1, $collector->getDumpsCount());
-        serialize($collector);
+        $collector->serialize();
     }
 
     public function testCollectHtml()
@@ -118,7 +99,7 @@ EOTXT;
 
         $this->assertSame($xOutput, trim($output));
         $this->assertSame(1, $collector->getDumpsCount());
-        serialize($collector);
+        $collector->serialize();
     }
 
     public function testFlush()

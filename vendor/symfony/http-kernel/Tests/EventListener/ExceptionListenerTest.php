@@ -15,8 +15,8 @@ use PHPUnit\Framework\TestCase;
 use Symfony\Component\EventDispatcher\EventDispatcher;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\HttpKernel\Event\ExceptionEvent;
-use Symfony\Component\HttpKernel\Event\ResponseEvent;
+use Symfony\Component\HttpKernel\Event\FilterResponseEvent;
+use Symfony\Component\HttpKernel\Event\GetResponseForExceptionEvent;
 use Symfony\Component\HttpKernel\EventListener\ExceptionListener;
 use Symfony\Component\HttpKernel\HttpKernelInterface;
 use Symfony\Component\HttpKernel\KernelEvents;
@@ -54,13 +54,11 @@ class ExceptionListenerTest extends TestCase
         $this->iniSet('error_log', file_exists('/dev/null') ? '/dev/null' : 'nul');
 
         $l = new ExceptionListener('foo');
-        $l->logKernelException($event);
         $l->onKernelException($event);
 
         $this->assertEquals(new Response('foo'), $event->getResponse());
 
         try {
-            $l->logKernelException($event2);
             $l->onKernelException($event2);
             $this->fail('RuntimeException expected');
         } catch (\RuntimeException $e) {
@@ -77,13 +75,11 @@ class ExceptionListenerTest extends TestCase
         $logger = new TestLogger();
 
         $l = new ExceptionListener('foo', $logger);
-        $l->logKernelException($event);
         $l->onKernelException($event);
 
         $this->assertEquals(new Response('foo'), $event->getResponse());
 
         try {
-            $l->logKernelException($event2);
             $l->onKernelException($event2);
             $this->fail('RuntimeException expected');
         } catch (\RuntimeException $e) {
@@ -103,8 +99,8 @@ class ExceptionListenerTest extends TestCase
 
         $request = new Request();
         $exception = new \Exception('foo');
-        $event = new ExceptionEvent(new TestKernel(), $request, HttpKernelInterface::MASTER_REQUEST, $exception);
-        $event2 = new ExceptionEvent(new TestKernelThatThrowsException(), $request, HttpKernelInterface::MASTER_REQUEST, $exception);
+        $event = new GetResponseForExceptionEvent(new TestKernel(), $request, HttpKernelInterface::MASTER_REQUEST, $exception);
+        $event2 = new GetResponseForExceptionEvent(new TestKernelThatThrowsException(), $request, HttpKernelInterface::MASTER_REQUEST, $exception);
 
         return [
             [$event, $event2],
@@ -123,7 +119,7 @@ class ExceptionListenerTest extends TestCase
         $request = Request::create('/');
         $request->setRequestFormat('xml');
 
-        $event = new ExceptionEvent($kernel, $request, HttpKernelInterface::MASTER_REQUEST, new \Exception('foo'));
+        $event = new GetResponseForExceptionEvent($kernel, $request, HttpKernelInterface::MASTER_REQUEST, new \Exception('foo'));
         $listener->onKernelException($event);
 
         $response = $event->getResponse();
@@ -143,14 +139,14 @@ class ExceptionListenerTest extends TestCase
         $dispatcher->addSubscriber($listener);
 
         $request = Request::create('/');
-        $event = new ExceptionEvent($kernel, $request, HttpKernelInterface::MASTER_REQUEST, new \Exception('foo'));
-        $dispatcher->dispatch($event, KernelEvents::EXCEPTION);
+        $event = new GetResponseForExceptionEvent($kernel, $request, HttpKernelInterface::MASTER_REQUEST, new \Exception('foo'));
+        $dispatcher->dispatch(KernelEvents::EXCEPTION, $event);
 
         $response = new Response('', 200, ['content-security-policy' => "style-src 'self'"]);
         $this->assertTrue($response->headers->has('content-security-policy'));
 
-        $event = new ResponseEvent($kernel, $request, HttpKernelInterface::MASTER_REQUEST, $response);
-        $dispatcher->dispatch($event, KernelEvents::RESPONSE);
+        $event = new FilterResponseEvent($kernel, $request, HttpKernelInterface::MASTER_REQUEST, $response);
+        $dispatcher->dispatch(KernelEvents::RESPONSE, $event);
 
         $this->assertFalse($response->headers->has('content-security-policy'), 'CSP header has been removed');
         $this->assertFalse($dispatcher->hasListeners(KernelEvents::RESPONSE), 'CSP removal listener has been removed');

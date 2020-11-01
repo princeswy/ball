@@ -37,8 +37,6 @@ use Symfony\Component\Routing\RequestContextAwareInterface;
  *
  * @author Fabien Potencier <fabien@symfony.com>
  * @author Yonel Ceruto <yonelceruto@gmail.com>
- *
- * @final since Symfony 4.3
  */
 class RouterListener implements EventSubscriberInterface
 {
@@ -55,10 +53,11 @@ class RouterListener implements EventSubscriberInterface
      * @param RequestContext|null                         $context      The RequestContext (can be null when $matcher implements RequestContextAwareInterface)
      * @param LoggerInterface|null                        $logger       The logger
      * @param string                                      $projectDir
+     * @param bool                                        $debug
      *
      * @throws \InvalidArgumentException
      */
-    public function __construct($matcher, RequestStack $requestStack, RequestContext $context = null, LoggerInterface $logger = null, string $projectDir = null, bool $debug = true)
+    public function __construct($matcher, RequestStack $requestStack, RequestContext $context = null, LoggerInterface $logger = null, $projectDir = null, $debug = true)
     {
         if (!$matcher instanceof UrlMatcherInterface && !$matcher instanceof RequestMatcherInterface) {
             throw new \InvalidArgumentException('Matcher must either implement UrlMatcherInterface or RequestMatcherInterface.');

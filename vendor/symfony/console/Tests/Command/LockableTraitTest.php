@@ -21,7 +21,7 @@ class LockableTraitTest extends TestCase
 {
     protected static $fixturesPath;
 
-    public static function setUpBeforeClass(): void
+    public static function setUpBeforeClass()
     {
         self::$fixturesPath = __DIR__.'/../Fixtures/';
         require_once self::$fixturesPath.'/FooLockCommand.php';
@@ -41,7 +41,7 @@ class LockableTraitTest extends TestCase
     {
         $command = new \FooLockCommand();
 
-        if (SemaphoreStore::isSupported()) {
+        if (SemaphoreStore::isSupported(false)) {
             $store = new SemaphoreStore();
         } else {
             $store = new FlockStore();

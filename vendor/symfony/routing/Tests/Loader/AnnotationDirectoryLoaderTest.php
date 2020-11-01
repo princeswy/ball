@@ -19,7 +19,7 @@ class AnnotationDirectoryLoaderTest extends AbstractAnnotationLoaderTest
     protected $loader;
     protected $reader;
 
-    protected function setUp(): void
+    protected function setUp()
     {
         parent::setUp();
 

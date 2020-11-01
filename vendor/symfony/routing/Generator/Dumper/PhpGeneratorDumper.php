@@ -11,17 +11,11 @@
 
 namespace Symfony\Component\Routing\Generator\Dumper;
 
-@trigger_error(sprintf('The "%s" class is deprecated since Symfony 4.3, use "CompiledUrlGeneratorDumper" instead.', PhpGeneratorDumper::class), E_USER_DEPRECATED);
-
-use Symfony\Component\Routing\Matcher\Dumper\CompiledUrlMatcherDumper;
-
 /**
  * PhpGeneratorDumper creates a PHP class able to generate URLs for a given set of routes.
  *
  * @author Fabien Potencier <fabien@symfony.com>
  * @author Tobias Schultze <http://tobion.de>
- *
- * @deprecated since Symfony 4.3, use CompiledUrlGeneratorDumper instead.
  */
 class PhpGeneratorDumper extends GeneratorDumper
 {
@@ -58,13 +52,11 @@ use Psr\Log\LoggerInterface;
 class {$options['class']} extends {$options['base_class']}
 {
     private static \$declaredRoutes;
-    private \$defaultLocale;
 
-    public function __construct(RequestContext \$context, LoggerInterface \$logger = null, string \$defaultLocale = null)
+    public function __construct(RequestContext \$context, LoggerInterface \$logger = null)
     {
         \$this->context = \$context;
         \$this->logger = \$logger;
-        \$this->defaultLocale = \$defaultLocale;
         if (null === self::\$declaredRoutes) {
             self::\$declaredRoutes = {$this->generateDeclaredRoutes()};
         }
@@ -96,7 +88,7 @@ EOF;
             $properties[] = $compiledRoute->getHostTokens();
             $properties[] = $route->getSchemes();
 
-            $routes .= sprintf("        '%s' => %s,\n", $name, CompiledUrlMatcherDumper::export($properties));
+            $routes .= sprintf("        '%s' => %s,\n", $name, str_replace("\n", '', var_export($properties, true)));
         }
         $routes .= '    ]';
 
@@ -113,20 +105,6 @@ EOF;
         return <<<'EOF'
     public function generate($name, $parameters = [], $referenceType = self::ABSOLUTE_PATH)
     {
-        $locale = $parameters['_locale']
-            ?? $this->context->getParameter('_locale')
-            ?: $this->defaultLocale;
-
-        if (null !== $locale && null !== $name) {
-            do {
-                if ((self::$declaredRoutes[$name.'.'.$locale][1]['_canonical_route'] ?? null) === $name) {
-                    unset($parameters['_locale']);
-                    $name .= '.'.$locale;
-                    break;
-                }
-            } while (false !== $locale = strstr($locale, '_', true));
-        }
-
         if (!isset(self::$declaredRoutes[$name])) {
             throw new RouteNotFoundException(sprintf('Unable to generate a URL for the named route "%s" as such route does not exist.', $name));
         }

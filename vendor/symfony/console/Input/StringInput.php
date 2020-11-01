@@ -30,7 +30,7 @@ class StringInput extends ArgvInput
     /**
      * @param string $input A string representing the parameters from the CLI
      */
-    public function __construct(string $input)
+    public function __construct($input)
     {
         parent::__construct([]);
 
@@ -61,7 +61,7 @@ class StringInput extends ArgvInput
                 $tokens[] = stripcslashes($match[1]);
             } else {
                 // should never happen
-                throw new InvalidArgumentException(sprintf('Unable to parse input near "... %s ..."', substr($input, $cursor, 10)));
+                throw new InvalidArgumentException(sprintf('Unable to parse input near "... %s ...".', substr($input, $cursor, 10)));
             }
 
             $cursor += \strlen($match[0]);

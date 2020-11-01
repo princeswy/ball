@@ -81,10 +81,10 @@ class FileBag extends ParameterBag
             sort($keys);
 
             if ($keys == self::$fileKeys) {
-                if (UPLOAD_ERR_NO_FILE == $file['error']) {
+                if (\UPLOAD_ERR_NO_FILE == $file['error']) {
                     $file = null;
                 } else {
-                    $file = new UploadedFile($file['tmp_name'], $file['name'], $file['type'], $file['error'], false);
+                    $file = new UploadedFile($file['tmp_name'], $file['name'], $file['type'], $file['size'], $file['error']);
                 }
             } else {
                 $file = array_map([$this, 'convertFileInformation'], $file);

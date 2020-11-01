@@ -19,12 +19,12 @@ class StreamOutputTest extends TestCase
 {
     protected $stream;
 
-    protected function setUp(): void
+    protected function setUp()
     {
         $this->stream = fopen('php://memory', 'a', false);
     }
 
-    protected function tearDown(): void
+    protected function tearDown()
     {
         $this->stream = null;
     }
@@ -54,6 +54,14 @@ class StreamOutputTest extends TestCase
         $output = new StreamOutput($this->stream);
         $output->writeln('foo');
         rewind($output->getStream());
-        $this->assertEquals('foo'.PHP_EOL, stream_get_contents($output->getStream()), '->doWrite() writes to the stream');
+        $this->assertEquals('foo'.\PHP_EOL, stream_get_contents($output->getStream()), '->doWrite() writes to the stream');
+    }
+
+    public function testDoWriteOnFailure()
+    {
+        $resource = fopen(__DIR__.'/../Fixtures/stream_output_file.txt', 'r', false);
+        $output = new StreamOutput($resource);
+        rewind($output->getStream());
+        $this->assertEquals('', stream_get_contents($output->getStream()));
     }
 }

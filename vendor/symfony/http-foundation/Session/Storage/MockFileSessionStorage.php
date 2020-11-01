@@ -31,14 +31,14 @@ class MockFileSessionStorage extends MockArraySessionStorage
      * @param string      $name     Session name
      * @param MetadataBag $metaBag  MetadataBag instance
      */
-    public function __construct(string $savePath = null, string $name = 'MOCKSESSID', MetadataBag $metaBag = null)
+    public function __construct($savePath = null, $name = 'MOCKSESSID', MetadataBag $metaBag = null)
     {
         if (null === $savePath) {
             $savePath = sys_get_temp_dir();
         }
 
         if (!is_dir($savePath) && !@mkdir($savePath, 0777, true) && !is_dir($savePath)) {
-            throw new \RuntimeException(sprintf('Session Storage was not able to create directory "%s"', $savePath));
+            throw new \RuntimeException(sprintf('Session Storage was not able to create directory "%s".', $savePath));
         }
 
         $this->savePath = $savePath;
@@ -88,7 +88,7 @@ class MockFileSessionStorage extends MockArraySessionStorage
     public function save()
     {
         if (!$this->started) {
-            throw new \RuntimeException('Trying to save a session that was not started yet or was already closed');
+            throw new \RuntimeException('Trying to save a session that was not started yet or was already closed.');
         }
 
         $data = $this->data;

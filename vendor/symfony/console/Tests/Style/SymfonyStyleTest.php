@@ -28,7 +28,7 @@ class SymfonyStyleTest extends TestCase
     protected $tester;
     private $colSize;
 
-    protected function setUp(): void
+    protected function setUp()
     {
         $this->colSize = getenv('COLUMNS');
         putenv('COLUMNS=121');
@@ -36,7 +36,7 @@ class SymfonyStyleTest extends TestCase
         $this->tester = new CommandTester($this->command);
     }
 
-    protected function tearDown(): void
+    protected function tearDown()
     {
         putenv($this->colSize ? 'COLUMNS='.$this->colSize : 'COLUMNS');
         $this->command = null;

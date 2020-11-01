@@ -27,7 +27,7 @@ class CommandTesterTest extends TestCase
     protected $command;
     protected $tester;
 
-    protected function setUp(): void
+    protected function setUp()
     {
         $this->command = new Command('foo');
         $this->command->addArgument('command');
@@ -38,7 +38,7 @@ class CommandTesterTest extends TestCase
         $this->tester->execute(['foo' => 'bar'], ['interactive' => false, 'decorated' => false, 'verbosity' => Output::VERBOSITY_VERBOSE]);
     }
 
-    protected function tearDown(): void
+    protected function tearDown()
     {
         $this->command = null;
         $this->tester = null;
@@ -59,12 +59,12 @@ class CommandTesterTest extends TestCase
     public function testGetOutput()
     {
         rewind($this->tester->getOutput()->getStream());
-        $this->assertEquals('foo'.PHP_EOL, stream_get_contents($this->tester->getOutput()->getStream()), '->getOutput() returns the current output instance');
+        $this->assertEquals('foo'.\PHP_EOL, stream_get_contents($this->tester->getOutput()->getStream()), '->getOutput() returns the current output instance');
     }
 
     public function testGetDisplay()
     {
-        $this->assertEquals('foo'.PHP_EOL, $this->tester->getDisplay(), '->getDisplay() returns the display of the last execution');
+        $this->assertEquals('foo'.\PHP_EOL, $this->tester->getDisplay(), '->getDisplay() returns the display of the last execution');
     }
 
     public function testGetStatusCode()
@@ -196,7 +196,7 @@ class CommandTesterTest extends TestCase
         ];
 
         $command = new Command('foo');
-        $command->setCode(function ($input, $output) use ($questions, $command) {
+        $command->setCode(function ($input, $output) use ($questions) {
             $io = new SymfonyStyle($input, $output);
             $io->ask($questions[0]);
             $io->ask($questions[1]);
@@ -208,24 +208,5 @@ class CommandTesterTest extends TestCase
         $tester->execute([]);
 
         $this->assertEquals(0, $tester->getStatusCode());
-    }
-
-    public function testErrorOutput()
-    {
-        $command = new Command('foo');
-        $command->addArgument('command');
-        $command->addArgument('foo');
-        $command->setCode(function ($input, $output) {
-            $output->getErrorOutput()->write('foo');
-        }
-        );
-
-        $tester = new CommandTester($command);
-        $tester->execute(
-            ['foo' => 'bar'],
-            ['capture_stderr_separately' => true]
-        );
-
-        $this->assertSame('foo', $tester->getErrorOutput());
     }
 }

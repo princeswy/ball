@@ -9,6 +9,7 @@
 namespace App\Http\Controllers;
 
 
+use App\models\Fevent;
 use App\models\Fmatch;
 use App\models\FmatchLineup;
 use App\models\Fmissplayer;
@@ -84,6 +85,12 @@ class FmatchController extends Controller
             foreach ($match_map as $k => $v) {
                 $match_map[$k]['home_logo'] = isset($team_map[$v['home_id']]) ? $team_map[$v['home_id']] : '';
                 $match_map[$k]['guest_logo'] = isset($team_map[$v['guest_id']]) ? $team_map[$v['guest_id']] : '';
+                $event_data = Fevent::where('match_id', $v['match_id'])->first();
+                if (!$event_data) {
+                    $match_map[$k]['start_time'] = $v['match_time'];
+                } else {
+                    $match_map[$k]['start_time'] = $event_data->toArray()['start_time'];
+                }
             }
             $res['list'] = $match_map;
             if (count($match_map) > 0) {

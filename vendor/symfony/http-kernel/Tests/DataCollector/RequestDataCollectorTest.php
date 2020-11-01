@@ -22,8 +22,8 @@ use Symfony\Component\HttpFoundation\Session\Session;
 use Symfony\Component\HttpFoundation\Session\Storage\MockArraySessionStorage;
 use Symfony\Component\HttpKernel\Controller\ArgumentResolverInterface;
 use Symfony\Component\HttpKernel\DataCollector\RequestDataCollector;
-use Symfony\Component\HttpKernel\Event\ControllerEvent;
-use Symfony\Component\HttpKernel\Event\ResponseEvent;
+use Symfony\Component\HttpKernel\Event\FilterControllerEvent;
+use Symfony\Component\HttpKernel\Event\FilterResponseEvent;
 use Symfony\Component\HttpKernel\HttpKernel;
 use Symfony\Component\HttpKernel\HttpKernelInterface;
 
@@ -51,7 +51,7 @@ class RequestDataCollectorTest extends TestCase
         $this->assertEquals(['name' => 'foo'], $c->getRouteParams());
         $this->assertSame([], $c->getSessionAttributes());
         $this->assertSame('en', $c->getLocale());
-        $this->assertContains(__FILE__, $attributes->get('resource'));
+        $this->assertContainsEquals(__FILE__, $attributes->get('resource'));
         $this->assertSame('stdClass', $attributes->get('object')->getType());
 
         $this->assertInstanceOf('Symfony\Component\HttpFoundation\ParameterBag', $c->getResponseHeaders());
@@ -99,7 +99,7 @@ class RequestDataCollectorTest extends TestCase
                 '"Regular" callable',
                 [$this, 'testControllerInspection'],
                 [
-                    'class' => __NAMESPACE__.'\RequestDataCollectorTest',
+                    'class' => self::class,
                     'method' => 'testControllerInspection',
                     'file' => __FILE__,
                     'line' => $r1->getStartLine(),
@@ -206,7 +206,7 @@ class RequestDataCollectorTest extends TestCase
         $kernel = $this->getMockBuilder(HttpKernelInterface::class)->getMock();
 
         $c = new RequestDataCollector();
-        $c->onKernelResponse(new ResponseEvent($kernel, $request, HttpKernelInterface::MASTER_REQUEST, $this->createResponse()));
+        $c->onKernelResponse(new FilterResponseEvent($kernel, $request, HttpKernelInterface::MASTER_REQUEST, $this->createResponse()));
 
         $this->assertTrue($request->attributes->get('_redirected'));
     }
@@ -225,8 +225,6 @@ class RequestDataCollectorTest extends TestCase
         $cookie = $this->getCookieByName($response, 'sf_redirect');
 
         $this->assertNotEmpty($cookie->getValue());
-        $this->assertSame('lax', $cookie->getSameSite());
-        $this->assertFalse($cookie->isSecure());
     }
 
     public function testItCollectsTheRedirectionAndClearTheCookie()
@@ -276,9 +274,9 @@ class RequestDataCollectorTest extends TestCase
         $response->setStatusCode(200);
         $response->headers->set('Content-Type', 'application/json');
         $response->headers->set('X-Foo-Bar', null);
-        $response->headers->setCookie(new Cookie('foo', 'bar', 1, '/foo', 'localhost', true, true, false, null));
-        $response->headers->setCookie(new Cookie('bar', 'foo', new \DateTime('@946684800'), '/', null, false, true, false, null));
-        $response->headers->setCookie(new Cookie('bazz', 'foo', '2000-12-12', '/', null, false, true, false, null));
+        $response->headers->setCookie(new Cookie('foo', 'bar', 1, '/foo', 'localhost', true, true));
+        $response->headers->setCookie(new Cookie('bar', 'foo', new \DateTime('@946684800')));
+        $response->headers->setCookie(new Cookie('bazz', 'foo', '2000-12-12'));
 
         return $response;
     }
@@ -290,7 +288,7 @@ class RequestDataCollectorTest extends TestCase
     {
         $resolver = $this->getMockBuilder('Symfony\\Component\\HttpKernel\\Controller\\ControllerResolverInterface')->getMock();
         $httpKernel = new HttpKernel(new EventDispatcher(), $resolver, null, $this->getMockBuilder(ArgumentResolverInterface::class)->getMock());
-        $event = new ControllerEvent($httpKernel, $controller, $request, HttpKernelInterface::MASTER_REQUEST);
+        $event = new FilterControllerEvent($httpKernel, $controller, $request, HttpKernelInterface::MASTER_REQUEST);
         $collector->onKernelController($event);
     }
 
@@ -332,59 +330,5 @@ class RequestDataCollectorTest extends TestCase
         }
 
         throw new \InvalidArgumentException(sprintf('Cookie named "%s" is not in response', $name));
-    }
-
-    /**
-     * @dataProvider provideJsonContentTypes
-     */
-    public function testIsJson($contentType, $expected)
-    {
-        $response = $this->createResponse();
-        $request = $this->createRequest();
-        $request->headers->set('Content-Type', $contentType);
-
-        $c = new RequestDataCollector();
-        $c->collect($request, $response);
-
-        $this->assertSame($expected, $c->isJsonRequest());
-    }
-
-    public function provideJsonContentTypes()
-    {
-        return [
-            ['text/csv', false],
-            ['application/json', true],
-            ['application/JSON', true],
-            ['application/hal+json', true],
-            ['application/xml+json', true],
-            ['application/xml', false],
-            ['', false],
-        ];
-    }
-
-    /**
-     * @dataProvider providePrettyJson
-     */
-    public function testGetPrettyJsonValidity($content, $expected)
-    {
-        $response = $this->createResponse();
-        $request = Request::create('/', 'POST', [], [], [], [], $content);
-
-        $c = new RequestDataCollector();
-        $c->collect($request, $response);
-
-        $this->assertSame($expected, $c->getPrettyJson());
-    }
-
-    public function providePrettyJson()
-    {
-        return [
-            ['null', 'null'],
-            ['{ "foo": "bar" }', '{
-    "foo": "bar"
-}'],
-            ['{ "abc" }', null],
-            ['', null],
-        ];
     }
 }

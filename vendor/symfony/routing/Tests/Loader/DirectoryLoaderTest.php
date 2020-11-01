@@ -23,7 +23,7 @@ class DirectoryLoaderTest extends AbstractAnnotationLoaderTest
     private $loader;
     private $reader;
 
-    protected function setUp(): void
+    protected function setUp()
     {
         parent::setUp();
 

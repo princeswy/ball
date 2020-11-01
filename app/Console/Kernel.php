@@ -44,6 +44,8 @@ class Kernel extends ConsoleKernel
         // 亚盘 1亚盘 2大小球
         \App\Console\Commands\hOddsTask::class,
         \App\Console\Commands\matchDetailTask::class,
+        \App\Console\Commands\FScoreLive::class,
+        \App\Console\Commands\fLiveScore::class,
     ];
 
     /**

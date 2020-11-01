@@ -13,11 +13,7 @@ namespace Symfony\Component\HttpKernel\Tests\DataCollector;
 
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Debug\Exception\SilencedErrorContext;
-use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\RequestStack;
-use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\DataCollector\LoggerDataCollector;
-use Symfony\Component\HttpKernel\Log\DebugLoggerInterface;
 
 class LoggerDataCollectorTest extends TestCase
 {
@@ -43,46 +39,6 @@ class LoggerDataCollectorTest extends TestCase
             ['message' => 'Some custom logging message'],
             ['message' => 'With ending :'],
         ], $compilerLogs['Unknown Compiler Pass']);
-    }
-
-    public function testWithMasterRequest()
-    {
-        $masterRequest = new Request();
-        $stack = new RequestStack();
-        $stack->push($masterRequest);
-
-        $logger = $this
-            ->getMockBuilder(DebugLoggerInterface::class)
-            ->setMethods(['countErrors', 'getLogs', 'clear'])
-            ->getMock();
-        $logger->expects($this->once())->method('countErrors')->with(null);
-        $logger->expects($this->exactly(2))->method('getLogs')->with(null)->willReturn([]);
-
-        $c = new LoggerDataCollector($logger, __DIR__.'/', $stack);
-
-        $c->collect($masterRequest, new Response());
-        $c->lateCollect();
-    }
-
-    public function testWithSubRequest()
-    {
-        $masterRequest = new Request();
-        $subRequest = new Request();
-        $stack = new RequestStack();
-        $stack->push($masterRequest);
-        $stack->push($subRequest);
-
-        $logger = $this
-            ->getMockBuilder(DebugLoggerInterface::class)
-            ->setMethods(['countErrors', 'getLogs', 'clear'])
-            ->getMock();
-        $logger->expects($this->once())->method('countErrors')->with($subRequest);
-        $logger->expects($this->exactly(2))->method('getLogs')->with($subRequest)->willReturn([]);
-
-        $c = new LoggerDataCollector($logger, __DIR__.'/', $stack);
-
-        $c->collect($subRequest, new Response());
-        $c->lateCollect();
     }
 
     /**
@@ -157,14 +113,14 @@ class LoggerDataCollectorTest extends TestCase
         yield 'logs with some deprecations' => [
             1,
             [
-                ['message' => 'foo3', 'context' => ['exception' => new \ErrorException('warning', 0, E_USER_WARNING)], 'priority' => 100, 'priorityName' => 'DEBUG'],
-                ['message' => 'foo', 'context' => ['exception' => new \ErrorException('deprecated', 0, E_DEPRECATED)], 'priority' => 100, 'priorityName' => 'DEBUG'],
-                ['message' => 'foo2', 'context' => ['exception' => new \ErrorException('deprecated', 0, E_USER_DEPRECATED)], 'priority' => 100, 'priorityName' => 'DEBUG'],
+                ['message' => 'foo3', 'context' => ['exception' => new \ErrorException('warning', 0, \E_USER_WARNING)], 'priority' => 100, 'priorityName' => 'DEBUG'],
+                ['message' => 'foo', 'context' => ['exception' => new \ErrorException('deprecated', 0, \E_DEPRECATED)], 'priority' => 100, 'priorityName' => 'DEBUG'],
+                ['message' => 'foo2', 'context' => ['exception' => new \ErrorException('deprecated', 0, \E_USER_DEPRECATED)], 'priority' => 100, 'priorityName' => 'DEBUG'],
             ],
             [
-                ['message' => 'foo3', 'context' => ['exception' => ['warning', E_USER_WARNING]], 'priority' => 100, 'priorityName' => 'DEBUG'],
-                ['message' => 'foo', 'context' => ['exception' => ['deprecated', E_DEPRECATED]], 'priority' => 100, 'priorityName' => 'DEBUG', 'errorCount' => 1, 'scream' => false],
-                ['message' => 'foo2', 'context' => ['exception' => ['deprecated', E_USER_DEPRECATED]], 'priority' => 100, 'priorityName' => 'DEBUG', 'errorCount' => 1, 'scream' => false],
+                ['message' => 'foo3', 'context' => ['exception' => ['warning', \E_USER_WARNING]], 'priority' => 100, 'priorityName' => 'DEBUG'],
+                ['message' => 'foo', 'context' => ['exception' => ['deprecated', \E_DEPRECATED]], 'priority' => 100, 'priorityName' => 'DEBUG', 'errorCount' => 1, 'scream' => false],
+                ['message' => 'foo2', 'context' => ['exception' => ['deprecated', \E_USER_DEPRECATED]], 'priority' => 100, 'priorityName' => 'DEBUG', 'errorCount' => 1, 'scream' => false],
             ],
             2,
             0,
@@ -174,15 +130,17 @@ class LoggerDataCollectorTest extends TestCase
         yield 'logs with some silent errors' => [
             1,
             [
-                ['message' => 'foo3', 'context' => ['exception' => new \ErrorException('warning', 0, E_USER_WARNING)], 'priority' => 100, 'priorityName' => 'DEBUG'],
-                ['message' => 'foo3', 'context' => ['exception' => new SilencedErrorContext(E_USER_WARNING, __FILE__, __LINE__)], 'priority' => 100, 'priorityName' => 'DEBUG'],
+                ['message' => 'foo3', 'context' => ['exception' => new \ErrorException('warning', 0, \E_USER_WARNING)], 'priority' => 100, 'priorityName' => 'DEBUG'],
+                ['message' => 'foo3', 'context' => ['exception' => new SilencedErrorContext(\E_USER_WARNING, __FILE__, __LINE__)], 'priority' => 100, 'priorityName' => 'DEBUG'],
+                ['message' => '0', 'context' => ['exception' => new SilencedErrorContext(\E_USER_WARNING, __FILE__, __LINE__)], 'priority' => 100, 'priorityName' => 'DEBUG'],
             ],
             [
-                ['message' => 'foo3', 'context' => ['exception' => ['warning', E_USER_WARNING]], 'priority' => 100, 'priorityName' => 'DEBUG'],
-                ['message' => 'foo3', 'context' => ['exception' => [E_USER_WARNING]], 'priority' => 100, 'priorityName' => 'DEBUG', 'errorCount' => 1, 'scream' => true],
+                ['message' => 'foo3', 'context' => ['exception' => ['warning', \E_USER_WARNING]], 'priority' => 100, 'priorityName' => 'DEBUG'],
+                ['message' => 'foo3', 'context' => ['exception' => [\E_USER_WARNING]], 'priority' => 100, 'priorityName' => 'DEBUG', 'errorCount' => 1, 'scream' => true],
+                ['message' => '0', 'context' => ['exception' => [\E_USER_WARNING]], 'priority' => 100, 'priorityName' => 'DEBUG', 'errorCount' => 1, 'scream' => true],
             ],
             0,
-            1,
+            2,
         ];
     }
 }

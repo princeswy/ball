@@ -19,10 +19,7 @@ use Symfony\Component\Debug\ErrorHandler;
 use Symfony\Component\Debug\ExceptionHandler;
 use Symfony\Component\EventDispatcher\Event;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
-use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Debug\FileLinkFormatter;
-use Symfony\Component\HttpKernel\Event\GetResponseForExceptionEvent;
 use Symfony\Component\HttpKernel\Event\KernelEvent;
 use Symfony\Component\HttpKernel\KernelEvents;
 
@@ -40,7 +37,6 @@ class DebugHandlersListener implements EventSubscriberInterface
     private $scream;
     private $fileLinkFormat;
     private $scope;
-    private $charset;
     private $firstCall = true;
     private $hasTerminatedWithException;
 
@@ -53,16 +49,15 @@ class DebugHandlersListener implements EventSubscriberInterface
      * @param string|FileLinkFormatter|null $fileLinkFormat   The format for links to source files
      * @param bool                          $scope            Enables/disables scoping mode
      */
-    public function __construct(callable $exceptionHandler = null, LoggerInterface $logger = null, $levels = E_ALL, ?int $throwAt = E_ALL, bool $scream = true, $fileLinkFormat = null, bool $scope = true, string $charset = null)
+    public function __construct(callable $exceptionHandler = null, LoggerInterface $logger = null, $levels = \E_ALL, $throwAt = \E_ALL, $scream = true, $fileLinkFormat = null, $scope = true)
     {
         $this->exceptionHandler = $exceptionHandler;
         $this->logger = $logger;
-        $this->levels = null === $levels ? E_ALL : $levels;
-        $this->throwAt = \is_int($throwAt) ? $throwAt : (null === $throwAt ? null : ($throwAt ? E_ALL : null));
-        $this->scream = $scream;
+        $this->levels = null === $levels ? \E_ALL : $levels;
+        $this->throwAt = is_numeric($throwAt) ? (int) $throwAt : (null === $throwAt ? null : ($throwAt ? \E_ALL : null));
+        $this->scream = (bool) $scream;
         $this->fileLinkFormat = $fileLinkFormat;
-        $this->scope = $scope;
-        $this->charset = $charset;
+        $this->scope = (bool) $scope;
     }
 
     /**
@@ -70,6 +65,9 @@ class DebugHandlersListener implements EventSubscriberInterface
      */
     public function configure(Event $event = null)
     {
+        if ($event instanceof ConsoleEvent && !\in_array(\PHP_SAPI, ['cli', 'phpdbg'], true)) {
+            return;
+        }
         if (!$event instanceof KernelEvent ? !$this->firstCall : !$event->isMasterRequest()) {
             return;
         }
@@ -95,7 +93,7 @@ class DebugHandlersListener implements EventSubscriberInterface
                         $handler->screamAt($levels);
                     }
                     if ($this->scope) {
-                        $handler->scopeAt($levels & ~E_USER_DEPRECATED & ~E_DEPRECATED);
+                        $handler->scopeAt($levels & ~\E_USER_DEPRECATED & ~\E_DEPRECATED);
                     } else {
                         $handler->scopeAt(0, true);
                     }
@@ -149,35 +147,13 @@ class DebugHandlersListener implements EventSubscriberInterface
         }
     }
 
-    /**
-     * @internal
-     */
-    public function onKernelException(GetResponseForExceptionEvent $event)
-    {
-        if (!$this->hasTerminatedWithException || !$event->isMasterRequest()) {
-            return;
-        }
-
-        $debug = $this->scream && $this->scope;
-        $controller = function (Request $request) use ($debug) {
-            $e = $request->attributes->get('exception');
-            $handler = new ExceptionHandler($debug, $this->charset, $this->fileLinkFormat);
-
-            return new Response($handler->getHtml($e), $e->getStatusCode(), $e->getHeaders());
-        };
-
-        (new ExceptionListener($controller, $this->logger, $debug))->onKernelException($event);
-    }
-
     public static function getSubscribedEvents()
     {
         $events = [KernelEvents::REQUEST => ['configure', 2048]];
 
-        if ('cli' === \PHP_SAPI && \defined('Symfony\Component\Console\ConsoleEvents::COMMAND')) {
+        if (\defined('Symfony\Component\Console\ConsoleEvents::COMMAND')) {
             $events[ConsoleEvents::COMMAND] = ['configure', 2048];
         }
-
-        $events[KernelEvents::EXCEPTION] = ['onKernelException', -2048];
 
         return $events;
     }

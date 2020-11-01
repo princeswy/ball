@@ -17,11 +17,13 @@ class FstatisController extends Controller
             'code' => 1,
             'message' => '成功',
             'typeList' => Feventdetail::$event_type,
-            'data' => []
+            'data' => [],
+            'success' => true
         ];
         if (!$match_id) {
             $ret['code'] = 0;
             $ret['message'] = '参数有误，match_id为必传参数';
+            $res['success'] = false;
             return $ret;
         }
         $statis = Fmstatis::where('match_id', $match_id)->first();

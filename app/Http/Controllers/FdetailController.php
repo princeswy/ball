@@ -15,11 +15,13 @@ class FdetailController extends Controller
             'code' => 1,
             'message' => '成功',
             'typeList' => Feventdetail::$event_type,
-            'list' => []
+            'list' => [],
+            'success' => true
         ];
         if (!$match_id) {
             $ret['code'] = 0;
             $ret['message'] = '参数有误，match_id为必传参数';
+            $res['success'] = false;
             return $ret;
         }
         $detail = Feventdetail::where('match_id', $match_id)->orderBy('happen_time', 'desc')->get();

@@ -34,7 +34,6 @@ class FoddsController extends Controller
         $bookmaker_name_map = array_column($bookmaker_map, 'bookmaner_name', 'bookmaker_id');
         $start_odds_map = Fodds::where(['match_id' => $match_id, 'odds_type' => 0])->whereIn('bookmaker_id', $bookmakerid_map)->get();
         if (!$start_odds_map) {
-            $ret['code'] = 2;
             $ret['message'] = '暂无数据';
             return $ret;
         }

@@ -27,7 +27,6 @@ class FstatisController extends Controller
         }
         $statis = Fmstatis::where('match_id', $match_id)->first();
         if (!$statis) {
-            $ret['code'] = 2;
             $ret['message'] = '暂无数据';
             return $ret;
         }

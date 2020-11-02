@@ -42,7 +42,6 @@ class FhandoddsController extends Controller
             $start_odds_map = Ftotalodds::where(['match_id' => $match_id, 'odds_type' => 0])->whereIn('bookmaker_id', $bookmakerid_map)->get();
         }
         if (!$start_odds_map) {
-            $ret['code'] = 2;
             $ret['message'] = '暂无数据';
             return $ret;
         }

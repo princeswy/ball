@@ -26,7 +26,6 @@ class FdetailController extends Controller
         }
         $detail = Feventdetail::where('match_id', $match_id)->orderBy('happen_time', 'desc')->get();
         if (!$detail) {
-            $ret['code'] = 2;
             $ret['message'] = '暂无数据';
             return $ret;
         }

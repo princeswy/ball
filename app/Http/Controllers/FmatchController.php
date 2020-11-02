@@ -71,7 +71,7 @@ class FmatchController extends Controller
             if ($match_state == 3) {
                 $fmatch = $fmatch->where('match_state', '-1');
             }
-            $match_map = $fmatch->orderBy('match_time', 'asc')->select('match_id', 'league_id', 'season_id', 'league_name', 'match_time', 'home_name', 'guest_name', 'home_id', 'guest_id', 'match_state', 'half_score', 'score', 'home_red', 'guest_red', 'home_yellow', 'guest_yellow', 'home_corner', 'guest_corner', 'home_rank', 'guest_rank')->get();
+            $match_map = $fmatch->orderBy('match_time', 'asc')->select('match_id', 'out_match_id', 'league_id', 'season_id', 'league_name', 'match_time', 'home_name', 'guest_name', 'home_id', 'guest_id', 'match_state', 'half_score', 'score', 'home_red', 'guest_red', 'home_yellow', 'guest_yellow', 'home_corner', 'guest_corner', 'home_rank', 'guest_rank')->get();
             if (!$match_map) {
                 $res['list'] = [];
                 return $res;
@@ -246,7 +246,7 @@ class FmatchController extends Controller
     //比赛详情
     public function match_info(Request $request){
         $match_id = $request->input('match_id') ? $request->input('match_id') : 0;
-        $match = Fmatch::where('match_id', $match_id)->select('match_id','league_name','match_time','home_id','guest_id','home_name','guest_name','match_state','half_score','score','league_id','season_id')->get()->toarray();
+        $match = Fmatch::where('match_id', $match_id)->select('match_id','out_match_id','league_name','match_time','home_id','guest_id','home_name','guest_name','match_state','half_score','score','league_id','season_id')->get()->toarray();
         //获取球队头像
         $team_home = Fteam::where('team_id',$match[0]['home_id'])->select('logo_path')->get()->toarray();
         $team_guest = Fteam::where('team_id',$match[0]['guest_id'])->select('logo_path')->get()->toarray();
@@ -295,6 +295,7 @@ class FmatchController extends Controller
                     }
                     $ret['list'][] = [
                         'match_id' => $val['match_id'],
+                        'out_match_id' => $val['out_match_id'],
                         'home_name' => $val['home_name'],
                         'guest_name' => $val['guest_name'],
                         'match_state' => $val['match_state'],

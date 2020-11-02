@@ -164,11 +164,12 @@ class matchTask extends  Command
             $homeId = Fteam::handleSection(['out_teamid' => $val->homeId], $homeData);
             $guestId = Fteam::handleSection(['out_teamid' => $val->awayId], $guestData);
             $matchWhere = [
-                'league_id' => $leagueId,
+//                'league_id' => $leagueId,
                 'out_match_id' => $val->matchId,
-                'home_name' => $val->homeChs,
-                'guest_name' => $val->awayChs
+//                'home_name' => $val->homeChs,
+//                'guest_name' => $val->awayChs
             ];
+            $this->info($val->matchId);
             $matchData = [
                 'out_match_id' => $val->matchId,
                 'home_name' => $val->homeChs,
@@ -200,7 +201,8 @@ class matchTask extends  Command
                 'is_lineup' => $val->hasLineup ? 1 : 0,
                 'league_name' => $leagueName ? $leagueName : $val->leagueChsShort
             ];
-            Fmatch::handleSection($matchWhere, $matchData);
+            Fmatch::updateOrCreate($matchWhere, $matchData);
+//            Fmatch::handleSection($matchWhere, $matchData);
         }
         $this->info('共处理'.count($resData->matchList).'条数据');
     }

@@ -152,7 +152,7 @@ class lqInitTask extends  Command
     public function Handle_Player()
     {
 
-        $res = self::send_request(self::$team_url);
+        $res = self::send_request(self::$player_url);
         $resData = json_decode($res['content']);
 
         $player_datas = $resData->list;

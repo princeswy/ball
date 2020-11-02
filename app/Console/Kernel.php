@@ -48,7 +48,7 @@ class Kernel extends ConsoleKernel
         \App\Console\Commands\fLiveScore::class,
 
         // 篮球
-        \App\Console\Commands\lqInitTask::class,
+//        \App\Console\Commands\lqInitTask::class,
     ];
 
     /**

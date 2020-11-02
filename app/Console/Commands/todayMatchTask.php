@@ -122,7 +122,7 @@ class todayMatchTask extends  Command
                 'match_state' => $val->state,
                 'half_score' => (($val->state > 0 && $val->state <=5) || $val->state === -1) ? $val->homeHalfScore.'-'.$val->awayHalfScore : '',
 //                'score' => $val->state === -1 ? $val->homeScore.'-'.$val->awayScore : '',
-                'score' => ($val->homeScore != '' && $val->awayScore != '') ? $val->homeScore.'-'.$val->awayScore : '',
+                'score' => ($val->state > 2 || $val->state == -1) ? $val->homeScore.'-'.$val->awayScore : '',
                 'zl' => $val->isNeutral ? 1 : 0,
                 'home_id' => $homeId,
                 'guest_id' => $guestId,

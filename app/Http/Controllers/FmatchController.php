@@ -246,7 +246,14 @@ class FmatchController extends Controller
     //比赛详情
     public function match_info(Request $request){
         $match_id = $request->input('match_id') ? $request->input('match_id') : 0;
-        $match = Fmatch::where('match_id', $match_id)->select('match_id','out_match_id','league_name','match_time','home_id','guest_id','home_name','guest_name','match_state','half_score','score','league_id','season_id')->get()->toarray();
+        $out_match_id = $request->input('out_match_id') ? $request->input('out_match_id') : 0;
+        if ($match_id) {
+            $match = Fmatch::where('match_id', $match_id)->select('match_id', 'out_match_id', 'league_name', 'match_time', 'home_id', 'guest_id', 'home_name', 'guest_name', 'match_state', 'half_score', 'score', 'league_id', 'season_id')->get()->toarray();
+        } else if ($out_match_id) {
+            $match = Fmatch::where('out_match_id', $out_match_id)->select('match_id', 'out_match_id', 'league_name', 'match_time', 'home_id', 'guest_id', 'home_name', 'guest_name', 'match_state', 'half_score', 'score', 'league_id', 'season_id')->get()->toarray();
+        } else {
+            return ['code' => 0,'success' => false,'list' => [], 'message' => '参数无效', 'sysTime' => date('Y-m-d H:i:s')];
+        }
         //获取球队头像
         $team_home = Fteam::where('team_id',$match[0]['home_id'])->select('logo_path')->get()->toarray();
         $team_guest = Fteam::where('team_id',$match[0]['guest_id'])->select('logo_path')->get()->toarray();

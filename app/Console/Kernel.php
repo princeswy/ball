@@ -73,7 +73,7 @@ class Kernel extends ConsoleKernel
         # 未来N天的比赛
         $schedule->command('fmatch:matchTask --day=5')->everyTenMinutes()->runInBackground();
         # 当天比赛数据
-        $schedule->command('fmatch:todayMatchTask')->cron('*/2 * * * *')->runInBackground();
+        $schedule->command('fmatch:todayMatchTask')->cron('*/1 * * * *')->runInBackground();
         # 球员伤停
         $schedule->command('fmatch:missPlayerTask')->cron('*/2 * * * *')->runInBackground();
         # 阵容

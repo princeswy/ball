@@ -94,8 +94,8 @@ class FmatchController extends Controller
             }
             $res['list'] = $match_map;
             if (count($match_map) > 0) {
-                $leagueMap = Fmatch::where('match_time', 'like', $match_time . '%')->get(['league_name'])->toArray();
-                $res['leagueList'] = array_unique(array_column($leagueMap, 'league_name'));
+                $leagueMap = Fmatch::where('match_time', 'like', $match_time . '%')->get(['league_name', 'league_id'])->toArray();
+                $res['leagueList'] = array_unique(array_column($leagueMap, 'league_name', 'league_id'));
             }
         }
         return $res;

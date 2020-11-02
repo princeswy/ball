@@ -48,7 +48,7 @@ class Kernel extends ConsoleKernel
         \App\Console\Commands\fLiveScore::class,
 
         // 篮球
-//        \App\Console\Commands\lqInitTask::class,
+        \App\Console\Commands\lqInitTask::class,
     ];
 
     /**
@@ -94,5 +94,13 @@ class Kernel extends ConsoleKernel
         $schedule->command('fmatch:matchDetail')->everyMinute()->runInBackground();
         # 欧赔
         $schedule->command('fmatch:liveScore')->cron('*/2 * * * *')->runInBackground();
+
+        ####篮球####
+        #抓取球探篮球联赛
+        $schedule->command('qtlq:init --type=league')->dailyAt('01:00');
+        #抓取球探篮球球员
+        $schedule->command('qtlq:init --type=player')->dailyAt('01:00');
+        #抓取球探篮球球队
+        $schedule->command('qtlq:init --type=team')->dailyAt('01:00');
     }
 }

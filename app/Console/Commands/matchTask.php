@@ -27,7 +27,7 @@ class matchTask extends  Command
      *
      * @var string
      */
-    protected $signature = 'fmatch:matchTask {--date=} {--league_id=} {--season=} {--match_id=} {--day=5}';
+    protected $signature = 'fmatch:matchTask {--date=} {--league_id=} {--season=} {--match_id=} {--day=}';
 
     /**
      * The console command description.
@@ -93,6 +93,7 @@ class matchTask extends  Command
     }
 
     public function handleData ($url) {
+        $this->info($url);
         $res = self::send_request($url);
         $resData = json_decode($res['content']);
         $this->info('共'.count($resData->matchList).'条数据，开始处理');

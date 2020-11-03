@@ -282,7 +282,7 @@ class FmatchController extends Controller
             $match_map = [];
             for ($i = 2; $i <= 24; $i ++) {
                 $time = date('Y-m-d H:i:s', strtotime('+'.$i.' hours'));
-                $match_map = Fmatch::where('match_time', '<=', $time)->whereIn('match_state', [0, 1, 2, 3, 4, 5])->orderBy('match_time', 'asc')->limit(30)->get();
+                $match_map = Fmatch::where('match_time', '>=', date('Y-m-d H:i:s'))->where('match_time', '<=', $time)->whereIn('match_state', [0, 1, 2, 3, 4, 5])->orderBy('match_time', 'asc')->limit(30)->get();
                 if ($match_map) {
                     $match_map = $match_map->toArray();
                     break;

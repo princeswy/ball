@@ -62,7 +62,7 @@ class FmatchController extends Controller
             if ($match_state == 3) {
                 $fmatch = $fmatch->where('match_state', '-1');
             }
-            $match_map = $fmatch->orderBy('match_time', 'asc')->select('match_id', 'out_match_id', 'league_id', 'season_id', 'league_name', 'match_time', 'home_name', 'guest_name', 'home_id', 'guest_id', 'match_state', 'half_score', 'score', 'home_red', 'guest_red', 'home_yellow', 'guest_yellow', 'home_corner', 'guest_corner', 'home_rank', 'guest_rank')->get();
+            $match_map = $fmatch->orderBy('match_time', 'asc')->select(DB::raw("$match_type as match_type"),'match_id', 'out_match_id', 'league_id', 'season_id', 'league_name', 'match_time', 'home_name', 'guest_name', 'home_id', 'guest_id', 'match_state', 'half_score', 'score', 'home_red', 'guest_red', 'home_yellow', 'guest_yellow', 'home_corner', 'guest_corner', 'home_rank', 'guest_rank')->get();
             if (!$match_map) {
                 $res['list'] = [];
                 return $res;
@@ -107,7 +107,7 @@ class FmatchController extends Controller
             if ($match_state == 3) {
                 $Bmatch = $Bmatch->where('state', '-1');
             }
-            $Bmatch_map = $Bmatch->orderBy('match_time', 'asc')->select('id as match_id','out_match_id','league_id','season_id','league_name','match_time','home_name','away_name','home_id','away_id','state as match_state','score','first_score','second_score','third_score','fourth_score','overtimes','firstot','secondot','thirdot')->get();
+            $Bmatch_map = $Bmatch->orderBy('match_time', 'asc')->select(DB::raw("$match_type as match_type"),'id as match_id','out_match_id','league_id','season_id','league_name','match_time','home_name','away_name','home_id','away_id','state as match_state','score','first_score','second_score','third_score','fourth_score','overtimes','firstot','secondot','thirdot')->get();
             if (!$Bmatch_map) {
                 $res['list'] = [];
                 return $res;
@@ -142,21 +142,21 @@ class FmatchController extends Controller
 
 
     //阵容
-   /* public function match_lineup(Request $request){
-        //1：主队 2：客队
-        $is_host = $request->input('is_host') ? $request->input('is_host') : 1;
-        //比赛Id
-        $match_id = $request->input('match_id') ? $request->input('match_id') : 0;
-        //获取类型
-        //1：首发 2：替补
-        $subsitute= $request->input('subsitute') ? $request->input('subsitute') : 1;
-        $data = '';
-        if($match_id){
-            $data = FmatchLineup::join('d_player','d_player.id', '=', 'player_id')->where('d_match_lineup.match_id',  $match_id)->where('d_match_lineup.subsitute',  $subsitute)->where('d_match_lineup.is_host',  $is_host)->select('d_match_lineup.player_name','d_match_lineup.player_number','d_player.logo','d_match_lineup.player_id')->get()->toarray();
-        }
-        
-        return ['code' => 1,'success' => true,'list' => $data];
-    }*/
+    /* public function match_lineup(Request $request){
+         //1：主队 2：客队
+         $is_host = $request->input('is_host') ? $request->input('is_host') : 1;
+         //比赛Id
+         $match_id = $request->input('match_id') ? $request->input('match_id') : 0;
+         //获取类型
+         //1：首发 2：替补
+         $subsitute= $request->input('subsitute') ? $request->input('subsitute') : 1;
+         $data = '';
+         if($match_id){
+             $data = FmatchLineup::join('d_player','d_player.id', '=', 'player_id')->where('d_match_lineup.match_id',  $match_id)->where('d_match_lineup.subsitute',  $subsitute)->where('d_match_lineup.is_host',  $is_host)->select('d_match_lineup.player_name','d_match_lineup.player_number','d_player.logo','d_match_lineup.player_id')->get()->toarray();
+         }
+
+         return ['code' => 1,'success' => true,'list' => $data];
+     }*/
 
 
     //比赛伤残 阵容合并
@@ -164,7 +164,7 @@ class FmatchController extends Controller
         //比赛Id
         $match_id = $request->input('match_id') ? $request->input('match_id') : 0;
         $data = array();
-        
+
         //查当前赛队的伤残
         if($match_id){//主队伤残
             //获取主客队的ID
@@ -180,9 +180,9 @@ class FmatchController extends Controller
                 }
             }
 
-        //首发阵容
+            //首发阵容
             $matchLineup = FmatchLineup::join('d_player','d_player.id', '=', 'player_id')->where('d_match_lineup.match_id',  $match_id)->select('d_match_lineup.subsitute','d_match_lineup.is_host','d_match_lineup.player_name','d_match_lineup.player_number','d_player.logo','d_match_lineup.player_id', 'd_match_lineup.pos')->get()->toarray();
-           // dd($matchLineup);
+            // dd($matchLineup);
             foreach ($matchLineup as $k => $v) {
                 //主队收发
                 if($v['subsitute']==1&&$v['is_host']==1){
@@ -195,20 +195,20 @@ class FmatchController extends Controller
                     $data['guest_replace'][]=$v;
                 }
             }
-        
+
         }
 
         return ['code' => 1,'success' => true,'list' => $data];
     }
 
-  
+
 
     public function history_match(Request $request){
         $match_id = $request->input('match_id') ? $request->input('match_id') : 0;
         $fmatch = Fmatch::where('match_id', $match_id)->select('home_id','guest_id')->get()->toarray();
         $data=[];
         $match = Fmatch::where('match_id','<>', $match_id)->where('home_id',$fmatch[0]['home_id'])->where('guest_id',$fmatch[0]['guest_id'])->orwhere('home_id',$fmatch[0]['guest_id'])->where('guest_id',$fmatch[0]['home_id'])->where('match_id','<>', $match_id)->select('league_name','match_time','home_id','guest_id','home_name','guest_name','score')->skip(0)->take(10)->orderBy('match_time', 'desc')->get()->toarray();
-     
+
         $data = Fmatch::data_match($match,$fmatch[0]['home_id'],$fmatch[0]['guest_id']);
 
         //主场的历史交锋、
@@ -225,7 +225,7 @@ class FmatchController extends Controller
         $fmatch = Fmatch::where('match_id', $match_id)->select('home_id','guest_id')->get()->toarray();
         $data=[];
         //SELECT league_name,match_time,home_name,guest_name,score,home_id,guest_id FROM d_match WHERE home_id =13  AND match_id!=2467 and match_time < '2020-10-29' or  guest_id= 13  AND match_id!=2467   and match_time < '2020-10-29' ORDER BY match_time desc limit 10
-   
+
         $match = Fmatch::where('match_id','<>', $match_id)->where('home_id',$fmatch[0]['home_id'])->where('score','<>','')->orwhere('score','<>','')->where('guest_id',$fmatch[0]['home_id'])->where('match_id','<>', $match_id)->select('league_name','match_time','home_id','guest_id','home_name','guest_name','score')->skip(0)->take(10)->orderBy('match_time', 'desc')->get()->toarray();
 
         $data = Fmatch::data_match($match,$fmatch[0]['home_id'],$fmatch[0]['guest_id']);
@@ -255,7 +255,7 @@ class FmatchController extends Controller
 
 
 //未来赛事
-   public function future_match(Request $request){
+    public function future_match(Request $request){
         $match_id = $request->input('match_id') ? $request->input('match_id') : 0;
         $fmatch = Fmatch::where('match_id', $match_id)->select('home_id','guest_id','match_time')->get()->toarray();
 
@@ -263,7 +263,7 @@ class FmatchController extends Controller
         $data['guest'] = Fmatch::where('match_time','>', $fmatch[0]['match_time'])->where('home_id',$fmatch[0]['guest_id'])->orwhere('guest_id',$fmatch[0]['guest_id'])->where('match_time','>', $fmatch[0]['match_time'])->select('league_name','match_time','home_id','guest_id','home_name','guest_name')->skip(0)->take(10)->orderBy('match_time', 'desc')->get()->toarray();
         $data['home'] = Fmatch::where('match_time','>', $fmatch[0]['match_time'])->where('home_id',$fmatch[0]['home_id'])->orwhere('guest_id',$fmatch[0]['home_id'])->where('match_time','>', $fmatch[0]['match_time'])->select('league_name','match_time','home_id','guest_id','home_name','guest_name')->skip(0)->take(10)->orderBy('match_time', 'desc')->get()->toarray();
         return ['code' => 1,'success' => true,'list' => $data];
-   }
+    }
 
     //比赛详情
     public function match_info(Request $request){
@@ -305,10 +305,10 @@ class FmatchController extends Controller
             $match[0]['away_logo'] = $team_away[0]['team_logo'];
             //$event_data = Fevent::where('match_id', $match[0]['match_id'])->first();
             //if (!$event_data) {
-                $match[0]['start_time'] = $match[0]['match_time'];
+            $match[0]['start_time'] = $match[0]['match_time'];
             //} else {
-               // $match[0]['start_time'] = $event_data->toArray()['start_time'];
-         //   }
+            // $match[0]['start_time'] = $event_data->toArray()['start_time'];
+            //   }
 
         }
         return ['code' => 1,'success' => true,'list' => $match, 'sysTime' => date('Y-m-d H:i:s')];

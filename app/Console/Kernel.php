@@ -85,7 +85,8 @@ class Kernel extends ConsoleKernel
         # 球员详细技术统计榜
         $schedule->command('fmatch:playerCountTask')->everyTenMinutes()->runInBackground();
         # 欧赔
-        $schedule->command('fmatch:oddsTask')->cron('*/2 * * * *')->runInBackground();
+        $schedule->command('fmatch:oddsTask')->cron('*/3 * * * *')->runInBackground();
+        $schedule->command('fmatch:oddsTask')->cron('8,38 * * * *')->runInBackground();
         # 亚盘
         $schedule->command('fmatch:hOddsTask --odds_type=1')->everyThirtyMinutes()->runInBackground();
         # 大小球

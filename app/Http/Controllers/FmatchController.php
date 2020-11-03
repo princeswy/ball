@@ -29,7 +29,7 @@ class FmatchController extends Controller
         $match_time = $request->input('match_time') ? $request->input('match_time') : $date;
         $league_id = $request->input('league_id') ? $request->input('league_id') : false;
         $match_state = $request->input('match_state') ? $request->input('match_state') : 0;
-        $match_type = $request->input('matchType') ? $request->input('matchType') : 1; // 1是足球 2是篮球
+        $match_type = $request->input('match_type') ? $request->input('match_type') : 1; // 1是足球 2是篮球
         $dateMap = [
             date("Y-m-d",strtotime("-1 day"))
         ];

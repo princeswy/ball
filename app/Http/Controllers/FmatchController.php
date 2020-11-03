@@ -9,15 +9,15 @@
 namespace App\Http\Controllers;
 
 
-use App\Models\Fevent;
-use App\Models\Fmatch;
-use App\Models\FmatchLineup;
-use App\Models\Fmissplayer;
-use App\Models\Fteam;
+use App\models\Fevent;
+use App\models\Fmatch;
+use App\models\FmatchLineup;
+use App\models\Fmissplayer;
+use App\models\Fteam;
 use Illuminate\Http\Request;
 
-use App\Models\Bmatch;
-use App\Models\Bteam;
+use App\models\Bmatch;
+use App\models\Bteam;
 
 use DB;
 class FmatchController extends Controller

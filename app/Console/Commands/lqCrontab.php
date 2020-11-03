@@ -92,13 +92,22 @@ class lqCrontab extends  Command
         $days = $this->option ( 'days' ) ? intval ( $this->option ( 'days' ) ) : 5;
         $league_id = $this->option('league_id');
 
-        $client = new Client ();
-
         $sourcedata = [];
         if ( $league_id ) {
             $url = self::$match_url.'?leagueId='.$league_id;
             $res = self::send_request($url);
             $sourcedata = json_decode($res['content']);
+            $this->info('共'.count($sourcedata->matchList).'条数据');
+            $data = Bmatch::convert_qtMatch($sourcedata);
+
+            if ($data) foreach ($data as $key=>&$val) {
+
+                vv($val['out_match_id']);
+                $where = ['out_match_id' => $val['out_match_id'], 'source' => $val['source']];
+
+                Bmatch::updateOrCreate($where, $val);
+
+            }
         }
         else if ( $date && $days ) {
             for ($i = 0; $i <= $days; $i++) {
@@ -106,19 +115,19 @@ class lqCrontab extends  Command
                 $url = self::$match_url."?date=$date";
                 $res = self::send_request($url);
                 $sourcedata = json_decode($res['content']);
+                $this->info('共'.count($sourcedata->matchList).'条数据');
+                $data = Bmatch::convert_qtMatch($sourcedata);
+
+                if ($data) foreach ($data as $key=>&$val) {
+
+                    vv($val['out_match_id']);
+                    $where = ['out_match_id' => $val['out_match_id'], 'source' => $val['source']];
+
+                    Bmatch::updateOrCreate($where, $val);
+
+                }
                 sleep(90);
             }
-        }
-        $this->info('共'.count($sourcedata->matchList).'条数据');
-        $data = Bmatch::convert_qtMatch($sourcedata);
-
-        if ($data) foreach ($data as $key=>&$val) {
-
-            vv($val['out_match_id']);
-            $where = ['out_match_id' => $val['out_match_id'], 'source' => $val['source']];
-
-            Bmatch::updateOrCreate($where, $val);
-
         }
 
     }

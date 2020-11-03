@@ -104,5 +104,6 @@ class Kernel extends ConsoleKernel
         $schedule->command('qtlq:init --type=player')->dailyAt('01:00');
         #抓取球探篮球球队
         $schedule->command('qtlq:init --type=team')->dailyAt('01:00');
+        $schedule->command('lq:crontab --type=odds')->everyThirtyMinutes()->runInBackground();
     }
 }

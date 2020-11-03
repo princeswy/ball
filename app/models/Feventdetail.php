@@ -35,7 +35,7 @@ class Feventdetail extends Model
             $out_match_id = $val->matchId;
             $match_data = Fmatch::where('out_match_id', $out_match_id)->first();
             $match_id = $match_data ? $match_data->toArray()['match_id'] : 0;
-//            $map = [];
+            $map = [];
             foreach ($val->event as $e_key => $e_val) {
                 $data = [
                     'match_id' => $match_id,
@@ -53,9 +53,9 @@ class Feventdetail extends Model
                 } else {
                     $data['is_host'] = 0;
                 }
-                $event_data[] = $data;
+                $map[] = $data;
             }
-//            $event_data[] = $map;
+            $event_data[$match_id] = $map;
         }
         return $event_data;
     }

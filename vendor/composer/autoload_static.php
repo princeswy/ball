@@ -24,6 +24,7 @@ class ComposerStaticInit504e4ac559fb58991aea79aa24fe83fc
         'f598d06aa772fa33d905e87be6398fb1' => __DIR__ . '/..' . '/symfony/polyfill-intl-idn/bootstrap.php',
         '37a3dc5111fe8f707ab4c132ef1dbc62' => __DIR__ . '/..' . '/guzzlehttp/guzzle/src/functions_include.php',
         'f4e9c7747917193061b46ee142399603' => __DIR__ . '/..' . '/dingo/api/src/helpers.php',
+        '8a3c0d986fb941a84ccf9ff18c166856' => __DIR__ . '/../..' . '/app/helpers/helper.php',
     );
 
     public static $prefixLengthsPsr4 = array (
@@ -432,6 +433,12 @@ class ComposerStaticInit504e4ac559fb58991aea79aa24fe83fc
     );
 
     public static $classMap = array (
+        'App\\models\\Bleague' => __DIR__ . '/../..' . '/app/models/Bleague.php',
+        'App\\models\\Bleaguemap' => __DIR__ . '/../..' . '/app/models/Bleaguemap.php',
+        'App\\models\\Bleaguesource' => __DIR__ . '/../..' . '/app/models/Bleaguesource.php',
+        'App\\models\\Bplayer' => __DIR__ . '/../..' . '/app/models/Bplayer.php',
+        'App\\models\\Bseason' => __DIR__ . '/../..' . '/app/models/Bseason.php',
+        'App\\models\\Bteam' => __DIR__ . '/../..' . '/app/models/Bteam.php',
         'App\\models\\Continent' => __DIR__ . '/../..' . '/app/models/Continent.php',
         'App\\models\\Country' => __DIR__ . '/../..' . '/app/models/Country.php',
         'App\\models\\Fevent' => __DIR__ . '/../..' . '/app/models/Fevent.php',

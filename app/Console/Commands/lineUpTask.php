@@ -49,6 +49,11 @@ class lineUpTask extends  Command
     public function handle () {
         $url = self::$Url;
         $matchId = $this->option('match_id');
+        $script_name = substr($this->signature,0,strpos($this->signature,' '));
+        if ($matchId) {
+            $script_name = $script_name.' --match_id='.$matchId;
+        }
+        check_process_num($script_name) || exit('Process limit');
         if ($matchId) {
             $matchData = Fmatch::where('match_id', $matchId)->first();
             $outMatchId = $matchData ? $matchData->toArray()['out_match_id'] : false;

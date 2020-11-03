@@ -55,6 +55,20 @@ class matchTask extends  Command
         if ($date) {
             $url = $url.'?date='.$date;
         }
+        $script_name = substr($this->signature,0,strpos($this->signature,' '));
+        if ($date) {
+            $script_name = $script_name.' --date='.$date;
+        }
+        if ($leagueId) {
+            $script_name = $script_name. ' --league_id='.$leagueId;
+        }
+        if ($matchId) {
+            $script_name = $script_name. ' --match_id='.$matchId;
+        }
+        if ($day) {
+            $script_name = $script_name. ' --day='.$day;
+        }
+        check_process_num($script_name) || exit('Process limit');
         if ($leagueId) {
             $league = Fleague::where('league_id', $leagueId)->first();
             if (!$league) {
@@ -177,7 +191,7 @@ class matchTask extends  Command
                 'match_time' => $val->matchTime,
                 'match_state' => $val->state,
                 'half_score' => (($val->state > 0 && $val->state <=5) || $val->state === -1) ? $val->homeHalfScore.'-'.$val->awayHalfScore : '',
-                'score' => ($val->state > 2 || $val->state == -1) ? $val->homeScore.'-'.$val->awayScore : '',
+                'score' => ($val->state > 0 || $val->state == -1) ? $val->homeScore.'-'.$val->awayScore : '',
                 'zl' => $val->isNeutral ? 1 : 0,
                 'home_id' => $homeId,
                 'guest_id' => $guestId,

@@ -38,6 +38,8 @@ class todayMatchTask extends  Command
     public static $Url = 'http://interface.win007.com/football/today.aspx';
 
     public function handle () {
+        $script_name = substr($this->signature,0,strpos($this->signature,' '));
+        check_process_num($script_name) || exit('Process limit');
         $url = self::$Url;
         $res = self::send_request($url);
         $resData = json_decode($res['content']);
@@ -109,10 +111,10 @@ class todayMatchTask extends  Command
             $homeId = Fteam::handleSection(['out_teamid' => $val->homeId], $homeData);
             $guestId = Fteam::handleSection(['out_teamid' => $val->awayId], $guestData);
             $matchWhere = [
-                'league_id' => $leagueId,
+//                'league_id' => $leagueId,
                 'out_match_id' => $val->matchId,
-                'home_name' => $val->homeChs,
-                'guest_name' => $val->awayChs
+//                'home_name' => $val->homeChs,
+//                'guest_name' => $val->awayChs
             ];
             $matchData = [
                 'out_match_id' => $val->matchId,
@@ -122,7 +124,7 @@ class todayMatchTask extends  Command
                 'match_state' => $val->state,
                 'half_score' => (($val->state > 0 && $val->state <=5) || $val->state === -1) ? $val->homeHalfScore.'-'.$val->awayHalfScore : '',
 //                'score' => $val->state === -1 ? $val->homeScore.'-'.$val->awayScore : '',
-                'score' => ($val->state > 2 || $val->state == -1) ? $val->homeScore.'-'.$val->awayScore : '',
+                'score' => ($val->state > 0 || $val->state == -1) ? $val->homeScore.'-'.$val->awayScore : '',
                 'zl' => $val->isNeutral ? 1 : 0,
                 'home_id' => $homeId,
                 'guest_id' => $guestId,

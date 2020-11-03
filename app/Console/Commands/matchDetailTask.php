@@ -49,21 +49,27 @@ class matchDetailTask extends  Command
     public function handle () {
         $url = self::$Url;
         $date = $this->option('date');
+        $script_name = substr($this->signature,0,strpos($this->signature,' '));
         if ($date) {
             $url = $url.'?date='.$date;
+            $script_name = $script_name.' -date='.$date;
         }
+        check_process_num($script_name) || exit('Process limit');
         $res = self::send_request(self::$Url);
         $resData = json_decode($res['content']);
         $detailData = Feventdetail::handleData($resData);
         $statisData = Fmstatis::handleData($resData);
         foreach ($detailData as $k => $v) {
-            $where = [
-                'out_match_id' => $v['out_match_id'],
-                'happen_time' => $v['happen_time'],
-                'type' => $v['type'],
-            ];
+            Feventdetail::where('match_id', $k)->delete();
+            foreach ($v as $key => $val) {
+                $where = [
+                    'out_match_id' => $val['out_match_id'],
+                    'happen_time' => $val['happen_time'],
+                    'type' => $val['type'],
+                ];
 
-            Feventdetail::updateOrCreate($where, $v);
+                Feventdetail::updateOrCreate($where, $val);
+            }
         }
         foreach ($statisData as $k => $v) {
             $where = [

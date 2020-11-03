@@ -44,7 +44,13 @@ class PlayerCountTask extends  Command
     public static $Url = 'http://interface.win007.com/football/playerCount.aspx';
 
     public function handle () {
+        $script_name = substr($this->signature,0,strpos($this->signature,' '));
         $league_id = $this->option('league_id');
+        if ($league_id) {
+            $script_name = $script_name. '--league_id'.$league_id;
+        }
+        check_process_num($script_name) || exit('Process limit');
+
         $leagueMap = [];
         if ($league_id) {
             $league = Fleague::where('league_id', $league_id)->first();
@@ -312,4 +318,16 @@ class PlayerCountTask extends  Command
 
         return [ 'content' => $content, 'HTTP_Code' => $HTTP_Code ];
     }
+
+    public static function check_process_num($script_name) {
+        $cmd = @popen("ps -ef | grep '{$script_name}' | grep -v grep | wc -l", 'r');
+        $num = @fread($cmd, 512);
+        $num += 0;
+        @pclose($cmd);
+        if ($num > 1) {
+            return false;
+        }
+        return true;
+    }
+
 }

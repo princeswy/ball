@@ -6,6 +6,12 @@ $vendorDir = dirname(dirname(__FILE__));
 $baseDir = dirname($vendorDir);
 
 return array(
+    'App\\models\\Bleague' => $baseDir . '/app/models/Bleague.php',
+    'App\\models\\Bleaguemap' => $baseDir . '/app/models/Bleaguemap.php',
+    'App\\models\\Bleaguesource' => $baseDir . '/app/models/Bleaguesource.php',
+    'App\\models\\Bplayer' => $baseDir . '/app/models/Bplayer.php',
+    'App\\models\\Bseason' => $baseDir . '/app/models/Bseason.php',
+    'App\\models\\Bteam' => $baseDir . '/app/models/Bteam.php',
     'App\\models\\Continent' => $baseDir . '/app/models/Continent.php',
     'App\\models\\Country' => $baseDir . '/app/models/Country.php',
     'App\\models\\Fevent' => $baseDir . '/app/models/Fevent.php',

@@ -51,6 +51,8 @@ class Bmatch extends Model
                 'out_match_id' => $val->matchId,
                 'out_home_id' => $val->homeTeamId,
                 'out_away_id' => $val->awayTeamId,
+                'league_id' => $val->leagueId,
+                'league_name' => $val->leagueChs,
                 'home_name' => $val->homeTeamChs,
                 'away_name' => $val->awayTeamChs,
                 'match_time' => $val->matchTime,

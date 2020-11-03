@@ -99,11 +99,11 @@ class Kernel extends ConsoleKernel
 
         ####篮球####
         #抓取球探篮球联赛
-        $schedule->command('lq:init --type=league')->dailyAt('01:00');
+        $schedule->command('lq:init --type=league')->cron('*/60 * * * *')->runInBackground();
         #抓取球探篮球球员
-        $schedule->command('lq:init --type=player')->dailyAt('01:00');
+        $schedule->command('lq:init --type=player')->cron('*/60 * * * *')->runInBackground();
         #抓取球探篮球球队
-        $schedule->command('lq:init --type=team')->dailyAt('01:00');
+        $schedule->command('lq:init --type=team')->cron('*/60 * * * *')->runInBackground();
         $schedule->command('lq:crontab --type=odds')->everyThirtyMinutes()->runInBackground();
     }
 }

@@ -306,6 +306,7 @@ class FmatchController extends Controller
             //$event_data = Fevent::where('match_id', $match[0]['match_id'])->first();
             //if (!$event_data) {
             $match[0]['start_time'] = $match[0]['match_time'];
+            $match[0]['match_type'] = $match_type;
             //} else {
             // $match[0]['start_time'] = $event_data->toArray()['start_time'];
             //   }

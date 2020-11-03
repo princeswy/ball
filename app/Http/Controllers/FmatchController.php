@@ -17,6 +17,7 @@ use App\Models\Fteam;
 use Illuminate\Http\Request;
 
 use App\Models\Bmatch;
+use App\Models\Bteam;
 
 use DB;
 class FmatchController extends Controller
@@ -266,32 +267,57 @@ class FmatchController extends Controller
 
     //比赛详情
     public function match_info(Request $request){
+        $match_type = $request->input('match_type') ? $request->input('match_type') : 1; //比赛类型 1：足球 2：篮球
         $match_id = $request->input('match_id') ? $request->input('match_id') : 0;
         $out_match_id = $request->input('out_match_id') ? $request->input('out_match_id') : 0;
-        if ($match_id) {
-            $match = Fmatch::where('match_id', $match_id)->select('match_id', 'out_match_id', 'league_name', 'match_time', 'home_id', 'guest_id', 'home_name', 'guest_name', 'match_state', 'half_score', 'score', 'league_id', 'season_id')->get()->toarray();
-        } else if ($out_match_id) {
-            $match = Fmatch::where('out_match_id', $out_match_id)->select('match_id', 'out_match_id', 'league_name', 'match_time', 'home_id', 'guest_id', 'home_name', 'guest_name', 'match_state', 'half_score', 'score', 'league_id', 'season_id')->get()->toarray();
-        } else {
-            return ['code' => 0,'success' => false,'list' => [], 'message' => '参数无效', 'sysTime' => date('Y-m-d H:i:s')];
-        }
-        //获取球队头像
-        $team_home = Fteam::where('team_id',$match[0]['home_id'])->select('logo_path')->get()->toarray();
-        $team_guest = Fteam::where('team_id',$match[0]['guest_id'])->select('logo_path')->get()->toarray();
-        $match[0]['home_logo'] = $team_home[0]['logo_path'];
-        $match[0]['guest_logo'] = $team_guest[0]['logo_path'];
-        $event_data = Fevent::where('match_id', $match[0]['match_id'])->first();
-        if (!$event_data) {
-            $match[0]['start_time'] = $match[0]['match_time'];
-        } else {
-            $match[0]['start_time'] = $event_data->toArray()['start_time'];
+        if($match_type==1){
+            if ($match_id) {
+                $match = Fmatch::where('match_id', $match_id)->select('match_id', 'out_match_id', 'league_name', 'match_time', 'home_id', 'guest_id', 'home_name', 'guest_name', 'match_state', 'half_score', 'score', 'league_id', 'season_id')->get()->toarray();
+            } else if ($out_match_id) {
+                $match = Fmatch::where('out_match_id', $out_match_id)->select('match_id', 'out_match_id', 'league_name', 'match_time', 'home_id', 'guest_id', 'home_name', 'guest_name', 'match_state', 'half_score', 'score', 'league_id', 'season_id')->get()->toarray();
+            } else {
+                return ['code' => 0,'success' => false,'list' => [], 'message' => '参数无效', 'sysTime' => date('Y-m-d H:i:s')];
+            }
+            //获取球队头像
+            $team_home = Fteam::where('team_id',$match[0]['home_id'])->select('logo_path')->get()->toarray();
+            $team_guest = Fteam::where('team_id',$match[0]['guest_id'])->select('logo_path')->get()->toarray();
+            $match[0]['home_logo'] = $team_home[0]['logo_path'];
+            $match[0]['guest_logo'] = $team_guest[0]['logo_path'];
+            $event_data = Fevent::where('match_id', $match[0]['match_id'])->first();
+            if (!$event_data) {
+                $match[0]['start_time'] = $match[0]['match_time'];
+            } else {
+                $match[0]['start_time'] = $event_data->toArray()['start_time'];
+            }
+        }else{
+            //竞彩篮球的
+            if ($match_id) {
+                $match = Bmatch::where('id', $match_id)->select('id as match_id','out_match_id','league_id','season_id','league_name','match_time','home_name','away_name','home_id','away_id','state as match_state','score','first_score','second_score','third_score','fourth_score','overtimes','firstot','secondot','thirdot')->get()->toarray();
+            } else if ($out_match_id) {
+                $match = Bmatch::where('out_match_id', $out_match_id)->select('id as match_id','out_match_id','league_id','season_id','league_name','match_time','home_name','away_name','home_id','away_id','state as match_state','score','first_score','second_score','third_score','fourth_score','overtimes','firstot','secondot','thirdot')->get()->toarray();
+            } else {
+                return ['code' => 0,'success' => false,'list' => [], 'message' => '参数无效', 'sysTime' => date('Y-m-d H:i:s')];
+            }
+            //获取球队头像
+            $team_home = Bteam::where('id',$match[0]['home_id'])->select('team_logo')->get()->toarray();
+            $team_away = Bteam::where('id',$match[0]['away_id'])->select('team_logo')->get()->toarray();
+            $match[0]['home_logo'] = $team_home[0]['team_logo'];
+            $match[0]['away_logo'] = $team_away[0]['team_logo'];
+            //$event_data = Fevent::where('match_id', $match[0]['match_id'])->first();
+            //if (!$event_data) {
+                $match[0]['start_time'] = $match[0]['match_time'];
+            //} else {
+               // $match[0]['start_time'] = $event_data->toArray()['start_time'];
+         //   }
+
         }
         return ['code' => 1,'success' => true,'list' => $match, 'sysTime' => date('Y-m-d H:i:s')];
+
     }
 
     // 推荐比赛
     public function recommend_list(Request $request) {
-        $match_type = $request->input('match_type') ? $request->input('match_type') : 0; //比赛类型 0：足球 1：篮球
+        $match_type = $request->input('match_type') ? $request->input('match_type') : 1; //比赛类型 1：足球 2：篮球
         $ret = [
             'code' => 1,
             'success' => true,
@@ -299,7 +325,7 @@ class FmatchController extends Controller
             'sysTime' => date('Y-m-d H:i:s'),
             'list' => []
         ];
-        if ($match_type == 0) {
+        if ($match_type == 1) {
             $match_map = [];
             for ($i = 2; $i <= 24; $i ++) {
                 $time = date('Y-m-d H:i:s', strtotime('+'.$i.' hours'));

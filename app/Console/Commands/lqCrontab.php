@@ -126,6 +126,7 @@ class lqCrontab extends  Command
                     Bmatch::updateOrCreate($where, $val);
 
                 }
+                $this->warn('sleep 90s');
                 sleep(90);
             }
         }

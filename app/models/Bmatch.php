@@ -71,6 +71,7 @@ class Bmatch extends Model
                 'secondot' => $val->homeOT2.'-'.$val->awayOT2 != '-' ? $val->homeOT2.'-'.$val->awayOT2 : '',
                 'thirdot' => $val->homeOT3.'-'.$val->awayOT3 != '-' ? $val->homeOT3.'-'.$val->awayOT3 : '',
                 'zl' => $val->isNeutral ? 1 : 0,
+                'remain_time' => $val->remainTime != '' ? $val->remainTime : '',
                 'source' => 'win007'
             ];
         }

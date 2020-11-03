@@ -289,6 +289,7 @@ class FmatchController extends Controller
             } else {
                 $match[0]['start_time'] = $event_data->toArray()['start_time'];
             }
+            $match[0]['match_type'] = $match_type;
         }else{
             //竞彩篮球的
             if ($match_id) {

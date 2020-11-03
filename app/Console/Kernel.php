@@ -49,6 +49,7 @@ class Kernel extends ConsoleKernel
 
         // 篮球
         \App\Console\Commands\lqInitTask::class,
+        \App\Console\Commands\lqCrontab::class,
     ];
 
     /**

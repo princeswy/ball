@@ -8,6 +8,7 @@
 namespace App\Console\Commands;
 
 use App\models\Bmatch;
+use App\models\Bodds;
 use App\models\Continent;
 use App\models\Country;
 use App\models\Fgym;
@@ -42,6 +43,14 @@ class lqCrontab extends  Command
      *
      * @var string
      */
+
+    static $model = [
+        '3W' => 'App\models\Bodds',
+        'HC' => 'App\models\Bhcodds',
+//        'asian_total' => 'App\models\Basiantotal',
+        'asian_total' => 'App\models\Btotalhandicap',
+    ];
+
     protected $description = '抓取球探篮球比赛、赔率、积分榜、比分数据';
     public static $match_url = 'http://interface.win007.com/basketball/schedule.aspx';
 
@@ -130,6 +139,76 @@ class lqCrontab extends  Command
                 sleep(90);
             }
         }
+
+    }
+
+    public function Handle_Odds(){
+
+        $a = microtime(true);
+        set_time_limit(0);
+
+        $type = $this->option('odds_type');
+        $res = self::send_request(self::$odds_url);
+        $out_data = json_decode($res['content']);
+        if (!isset($out_data->List) || !isset($out_data->List[0]->spread)) {
+            return false;
+        }
+        $out_data = $out_data->List[0];
+
+        $hc_mes = $out_data->spread;
+        $odds_mes = $out_data->moneyLine;
+        $asian_totalmes = $out_data->total;
+
+        $type_map = [ '3W' => $odds_mes , 'HC' => $hc_mes, 'asian_total' => $asian_totalmes ];
+
+        $out_oddsdata = call_user_func_array( [ self::$model[$type], 'convert_qtOdds' ], [$type_map[$type]] );
+
+        if($out_oddsdata) foreach ($out_oddsdata as $val){
+            $ret = call_user_func_array( [ self::$model[$type], 'compareInsert' ], [$val['start'], $val['end']] );
+
+            !$ret || $match_ids[] = $val['start']['match_id'];
+        }
+
+        $b = microtime(true);echo $b-$a."<br>";
+
+    }
+
+    public function Handle_3WOdds(){
+
+        $url =
+        $source = 'win007';
+        $a = microtime(true);
+        set_time_limit(0);
+
+        $script_name = $this->signature.' --type='.$this->option('type');
+        check_process_num($script_name) || exit('Process limit');
+
+        $time = $this->option('time');
+        $type = $time < 5 ? '?day='.$time : '?min='.$time;
+
+        $url = self::$odds_3w_url.$type;
+
+        echo $url.$type."\n";
+
+        $res = self::send_request($url);
+        $out_data = json_decode($res['content']);
+        $b = microtime(true);
+        echo $b-$a."<br>";
+        $odds = Bodds::convert_qtOdds_old($out_data);
+        $match_ids = [];
+
+        if($odds) foreach ($odds as $val){
+
+            $ret = Bodds::compareInsert($val['start'],$val['end']);
+
+//            dd($val);
+            Bodds::update_oddscache($val['start']['match_id']);
+
+//            !$ret || $match_ids[] = $val['start']['match_id'];
+        }
+
+
+        $b = microtime(true);echo $b-$a."<br>";
 
     }
 

@@ -104,6 +104,15 @@ class Kernel extends ConsoleKernel
         $schedule->command('lq:init --type=player')->cron('*/60 * * * *')->runInBackground();
         #抓取球探篮球球队
         $schedule->command('lq:init --type=team')->cron('*/60 * * * *')->runInBackground();
+
         $schedule->command('lq:crontab --type=team')->cron('*/60 * * * *')->runInBackground();
+
+        $schedule->command('lq:crontab --type=match --days=5')->cron('0 */2 * * *')->runInBackground();
+
+        $schedule->command('lq:crontab --type=3w_odds')->cron('*/3 * * * *');
+        $schedule->command('lq:crontab --type=3w_odds --time=4')->cron('8,38 * * * *');
+        $schedule->command('lq:crontab --type=odds --odds_type=3W')->cron('*/3 * * * *');
+        $schedule->command('lq:crontab --type=odds --odds_type=HC')->cron('*/4 * * * *');
+        $schedule->command('lq:crontab --type=odds --odds_type=asian_total')->cron('*/5 * * * *');
     }
 }

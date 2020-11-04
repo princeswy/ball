@@ -44,7 +44,7 @@ class PlayerCountTask extends  Command
     public static $Url = 'http://interface.win007.com/football/playerCount.aspx';
 
     public function handle () {
-        $script_name = substr($this->signature,0,strpos($this->signature,' '));
+        $script_name = $this->signature;
         $league_id = $this->option('league_id');
         if ($league_id) {
             $script_name = $script_name. '--league_id'.$league_id;

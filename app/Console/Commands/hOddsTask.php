@@ -38,6 +38,8 @@ class hOddsTask extends  Command
         $a = microtime(true);
         set_time_limit(0);
         $type = $this->option('odds_type');
+        $script_name = substr($this->signature,0,strpos($this->signature,' ')).' --odds_type='.$type;
+        check_process_num($script_name) || exit('Process limit');
         $res = $this->send_request(self::$hand_odds_url);
         $out_data = json_decode($res['content']);
         $out_data = $out_data->list[0];

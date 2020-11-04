@@ -55,7 +55,7 @@ class matchTask extends  Command
         if ($date) {
             $url = $url.'?date='.$date;
         }
-        $script_name = substr($this->signature,0,strpos($this->signature,' '));
+        $script_name = $this->signature;
         if ($date) {
             $script_name = $script_name.' --date='.$date;
         }

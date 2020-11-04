@@ -49,7 +49,7 @@ class lineUpTask extends  Command
     public function handle () {
         $url = self::$Url;
         $matchId = $this->option('match_id');
-        $script_name = substr($this->signature,0,strpos($this->signature,' '));
+        $script_name = $this->signature;
         if ($matchId) {
             $script_name = $script_name.' --match_id='.$matchId;
         }

@@ -39,3 +39,4 @@ $router->get('/api/getHandOddsList','FhandoddsController@odds_list');
 $router->get('/api/getMatchDetail','FdetailController@index');
 $router->get('/api/getMatchStatis','FstatisController@index');
 $router->get('/api/getRecommendList','FmatchController@recommend_list');
+$router->get('/api/getBMatchOddsList','BmatchOddsController@index');

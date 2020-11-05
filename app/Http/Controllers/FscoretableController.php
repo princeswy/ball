@@ -21,8 +21,8 @@ class FscoretableController extends Controller
         if($team_id){
             $row = $row->where('team_id', $team_id);
         }
-        $row = $row->where('is_host', $is_host)->where('league_id', $league_id)->where('season_id', $season_id)->select('id','team_id','team_name','rank','points','total_count','win_count','draw_count','lost_count','get_score','lost_score','color','info')->get()->toarray();
-
+        
+        $row = $row->where('is_host', $is_host)->where('league_id', $league_id)->where('season_id', $season_id)->select('id','team_id','team_name','rank','points','total_count','win_count','draw_count','lost_count','get_score','lost_score','color','info')->orderBy('rank', 'asc')->get()->toarray();
         return ['code' => 1,'success' => true,'list' => $row];
     }
 

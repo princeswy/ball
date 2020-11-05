@@ -6,6 +6,7 @@ use App\models\Bstatistics;
 use App\models\Bstatisteam;
 use App\models\Bstatisplayer;
 use Illuminate\Http\Request;
+use App\models\Bmatch;
 
 use DB;
 class BstatisticsController extends Controller
@@ -63,6 +64,43 @@ class BstatisticsController extends Controller
             }
         //1636
         return ['code' => 1,'success' => true,'list' => $data];
+    }
+
+
+     //球员技术排名
+    //#  `shoot` int(11) DEFAULT '0' COMMENT '投篮数',
+ //# `score` int(11) DEFAULT '0' COMMENT '得分',
+//#  `helpattack` int(11) DEFAULT '0' COMMENT '助攻次数',
+
+    public function StatisplayerShoot(Request $request){
+        $data = [];
+        $match_id = $request->input('match_id') ? $request->input('match_id') : 0;
+        if($match_id){
+            $bmatch = Bmatch::where('id', $match_id)->select('home_id','away_id')->get()->toarray();
+            //主队投篮数
+            //select player_name,score from d_bstatisplayer where team_id=65 order by score desc limit 1;
+            $home_score = Bstatisplayer::join('d_bplayer','d_bplayer.id', '=', 'player_id')->where('d_bstatisplayer.team_id', $bmatch[0]['home_id'])->select('d_bplayer.player_name','score','d_bplayer.photo','d_bplayer.number')->skip(0)->take(1)->orderBy('score', 'desc')->get()->toarray();
+            //客队
+            $away_score = Bstatisplayer::join('d_bplayer','d_bplayer.id', '=', 'player_id')->where('d_bstatisplayer.team_id', $bmatch[0]['away_id'])->select('d_bplayer.player_name','score','d_bplayer.photo','d_bplayer.number')->skip(0)->take(1)->orderBy('score', 'desc')->get()->toarray();
+            //得分
+            //select player_name,shoot from d_bstatisplayer where team_id=65 order by shoot desc limit 1;
+            $home_shoot = Bstatisplayer::join('d_bplayer','d_bplayer.id', '=', 'player_id')->where('d_bstatisplayer.team_id', $bmatch[0]['home_id'])->select('d_bplayer.player_name','shoot','d_bplayer.photo','d_bplayer.number')->skip(0)->take(1)->orderBy('shoot', 'desc')->get()->toarray();
+            $away_shoot = Bstatisplayer::join('d_bplayer','d_bplayer.id', '=', 'player_id')->where('d_bstatisplayer.team_id', $bmatch[0]['away_id'])->select('d_bplayer.player_name','shoot','d_bplayer.photo','d_bplayer.number')->skip(0)->take(1)->orderBy('shoot', 'desc')->get()->toarray();
+            //助攻次数
+            //select player_name,helpattack from d_bstatisplayer where team_id=65 order by helpattack desc limit 1;
+            $home_helpattack = Bstatisplayer::join('d_bplayer','d_bplayer.id', '=', 'player_id')->where('d_bstatisplayer.team_id', $bmatch[0]['home_id'])->select('d_bplayer.player_name','helpattack','d_bplayer.photo','d_bplayer.number')->skip(0)->take(1)->orderBy('helpattack', 'desc')->get()->toarray();
+            $away_helpattack = Bstatisplayer::join('d_bplayer','d_bplayer.id', '=', 'player_id')->where('d_bstatisplayer.team_id', $bmatch[0]['away_id'])->select('d_bplayer.player_name','helpattack','d_bplayer.photo','d_bplayer.number')->skip(0)->take(1)->orderBy('helpattack', 'desc')->get()->toarray();
+            
+            $data['home']['score'] = $home_score?$home_score[0]:[];
+            $data['home']['shoot'] = $home_shoot?$home_shoot[0]:[];
+            $data['home']['helpattack'] = $home_helpattack?$home_helpattack[0]:[];
+
+            $data['away']['score'] = $away_score?$away_score[0]:[];
+            $data['away']['shoot'] = $away_shoot?$away_shoot[0]:[];
+            $data['away']['helpattack'] = $away_helpattack?$away_helpattack[0]:[];
+        }
+        return ['code' => 1,'success' => true,'list' => $data];
+        
     }
 
 

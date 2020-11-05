@@ -94,6 +94,7 @@ class lqInitTask extends  Command
                 'country_id' => $val['country_id'],
                 'country_name' => $val['country'],
                 "sclass_kind" => $val['sclass_kind'],
+                'logo_path' => $val['logo_path']
             ];
 
             Bleague::updateOrCreate($where, $in_data);

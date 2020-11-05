@@ -43,4 +43,4 @@ $router->get('/api/getRecommendList','FmatchController@recommend_list');
 $router->get('/api/getBstatistics','BstatisticsController@index');
 $router->get('/api/getBstatisTeam','BstatisticsController@Bstatis_team');
 $router->get('/api/getBstatisplayer','BstatisticsController@Bstatisplayer');
-$router->get('/api/getBMatchOddsList','BmatchOddsController@index');
+$router->get('/api/getBmatchOddsList','BmatchOddsController@index');

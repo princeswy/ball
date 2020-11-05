@@ -7,8 +7,10 @@
  */
 namespace App\Console\Commands;
 
+use App\models\Bleague;
 use App\models\Bmatch;
 use App\models\Bodds;
+use App\models\Bscoretable;
 use App\models\Continent;
 use App\models\Country;
 use App\models\Fgym;
@@ -209,6 +211,51 @@ class lqCrontab extends  Command
 
 
         $b = microtime(true);echo $b-$a."<br>";
+
+    }
+
+    public function Handle_ScoreTable(){
+
+        $a = microtime(true);
+
+        $league_id = $this->option('league_id');
+        $season_name = $this->option('season_name');
+
+        if(!$league_id){
+            $this->info('!league_id');
+            return false;
+        }
+
+        $out_league_mes = Bleague::where( [ 'league_id' => $league_id ] )->first();
+        if ( !$out_league_mes ){
+            $this->info('联赛未匹配');
+            return false;
+        }
+
+        $url = sprintf( self::$scoretable_url, $out_league_mes->out_league_id );
+
+        if ( $season_name ) {
+            $url = $url.'&season='.$season_name;
+        }
+        echo $url."\n";
+
+        $res = self::send_request($url);
+        $out_data = json_decode($res['content']);
+        $datas = Bscoretable::convert_qt($out_data->list, $league_id);
+
+        if ( $datas ) {
+            foreach ( $datas as $key => $val ) {
+
+                $where = [
+                    'season_id' => $val['season_id'],
+                    'team_id' => $val['team_id'],
+                ];
+
+                Bscoretable::updateOrCreate( $where, $val );
+            }
+        }
+
+        echo microtime(true) - $a;
 
     }
 

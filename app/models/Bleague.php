@@ -48,6 +48,7 @@ class Bleague extends Model
             $seasons[$key]['league_id'] = intval($val->leagueId);
             $seasons[$key]['season_name'] = (string) $year;
             $seasons[$key]['season_name_hk'] = (string) $year;
+            $leagues[$key]['logo_path'] = isset($val->logo) ? ($val->logo ? $val->logo.'?win007=sell' : '') : '';
 
         }
 

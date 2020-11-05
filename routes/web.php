@@ -40,6 +40,7 @@ $router->get('/api/getMatchDetail','FdetailController@index');
 $router->get('/api/getMatchStatis','FstatisController@index');
 $router->get('/api/getRecommendList','FmatchController@recommend_list');
 //篮球技术统计
+//
 $router->get('/api/getBstatistics','BstatisticsController@index');
 $router->get('/api/getBstatisTeam','BstatisticsController@Bstatis_team');
 $router->get('/api/getBstatisplayer','BstatisticsController@Bstatisplayer');

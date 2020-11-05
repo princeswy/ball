@@ -42,6 +42,6 @@ $router->get('/api/getRecommendList','FmatchController@recommend_list');
 
 
 //篮球技术统计
-Route::any('/api/getBstatistics','BstatisticsController@index');
-Route::any('/api/getBstatisTeam','BstatisticsController@Bstatis_team');
-Route::any('/api/getBstatisplayer','BstatisticsController@Bstatisplayer');
+$router->get('/api/getBstatistics','BstatisticsController@index');
+$router->get('/api/getBstatisTeam','BstatisticsController@Bstatis_team');
+$router->get('/api/getBstatisplayer','BstatisticsController@Bstatisplayer');

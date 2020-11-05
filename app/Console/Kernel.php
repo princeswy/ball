@@ -51,6 +51,7 @@ class Kernel extends ConsoleKernel
         \App\Console\Commands\lqInitTask::class,
         \App\Console\Commands\lqCrontab::class,
         \App\Console\Commands\lqStatistics::class,
+        \App\Console\Commands\lqLineUp::class,
     ];
 
     /**
@@ -73,7 +74,7 @@ class Kernel extends ConsoleKernel
         # 球员
         $schedule->command('fmatch:playerTask')->dailyAt('5:00')->runInBackground();
         # 未来N天的比赛
-        $schedule->command('fmatch:matchTask --day=5')->everyTenMinutes()->runInBackground();
+        $schedule->command('fmatch:matchTask --day=5')->cron('*/60 * * * *')->runInBackground();
         # 当天比赛数据
         $schedule->command('fmatch:todayMatchTask')->cron('*/1 * * * *')->runInBackground();
         # 球员伤停
@@ -85,7 +86,7 @@ class Kernel extends ConsoleKernel
         # 射手榜
         $schedule->command('fmatch:shootersTask')->dailyAt('5:00')->runInBackground();
         # 球员详细技术统计榜
-        $schedule->command('fmatch:playerCountTask')->everyTenMinutes()->runInBackground();
+        $schedule->command('fmatch:playerCountTask')->cron('*/30 * * * *')->runInBackground();
         # 欧赔
         $schedule->command('fmatch:oddsTask')->cron('*/3 * * * *')->runInBackground();
         $schedule->command('fmatch:oddsTask')->cron('8,38 * * * *')->runInBackground();
@@ -117,6 +118,8 @@ class Kernel extends ConsoleKernel
         $schedule->command('lq:crontab --type=odds --odds_type=asian_total')->cron('*/5 * * * *');
 
         #抓取球探篮球技术统计
-        $schedule->command('lq:lqStatistics')->everyTenMinutes()->runInBackground();;
+        $schedule->command('lq:lqStatistics')->everyTenMinutes()->runInBackground();
+        #篮球阵容
+        $schedule->command('grab:qtlqLineup')->dailyAt('2:00')->runInBackground();
     }
 }

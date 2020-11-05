@@ -117,7 +117,7 @@ class lqCrontab extends  Command
                 vv($val['out_match_id']);
                 $where = ['out_match_id' => $val['out_match_id'], 'source' => $val['source']];
 
-                Bmatch::updateOrCreate($where, $val);
+                $match_id = Bmatch::updateOrCreate($where, $val)->id;
 
                 $eventdata = [];
                 $eventstatus = $val['state'];
@@ -142,7 +142,7 @@ class lqCrontab extends  Command
                 }
 
                 if($eventdata){
-                    Bevent::updateOrCreate(['match_id'=>$val['match_id'], $eventdata]);
+                    Bevent::updateOrCreate(['match_id'=>$match_id, $eventdata]);
                 }
 
             }
@@ -161,7 +161,7 @@ class lqCrontab extends  Command
                     vv($val['out_match_id']);
                     $where = ['out_match_id' => $val['out_match_id'], 'source' => $val['source']];
 
-                    Bmatch::updateOrCreate($where, $val);
+                    $match_id = Bmatch::updateOrCreate($where, $val)->id;
 
                     $eventdata = [];
                     $eventstatus = $val['state'];
@@ -186,7 +186,7 @@ class lqCrontab extends  Command
                     }
 
                     if($eventdata){
-                        Bevent::updateOrCreate(['match_id'=>$val['match_id'], $eventdata]);
+                        Bevent::updateOrCreate(['match_id'=>$match_id, $eventdata]);
                     }
 
                 }

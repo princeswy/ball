@@ -2,9 +2,9 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Bstatistics;
-use App\Models\Bstatisteam;
-use App\Models\Bstatisplayer;
+use App\models\Bstatistics;
+use App\models\Bstatisteam;
+use App\models\Bstatisplayer;
 use Illuminate\Http\Request;
 
 use DB;

@@ -65,6 +65,7 @@ class Bscoretable extends Model
             }
 
             $season_name = $val->season;
+            $season_map = [];
             if ( strstr($season_name, '-') ) {
                 $season_name_map = explode( '-', $season_name );
                 $season_map = [];

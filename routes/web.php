@@ -39,3 +39,9 @@ $router->get('/api/getHandOddsList','FhandoddsController@odds_list');
 $router->get('/api/getMatchDetail','FdetailController@index');
 $router->get('/api/getMatchStatis','FstatisController@index');
 $router->get('/api/getRecommendList','FmatchController@recommend_list');
+
+
+//篮球技术统计
+Route::any('/api/getBstatistics','BstatisticsController@index');
+Route::any('/api/getBstatisTeam','BstatisticsController@Bstatis_team');
+Route::any('/api/getBstatisplayer','BstatisticsController@Bstatisplayer');

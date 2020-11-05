@@ -18,11 +18,11 @@ class HomeController extends Controller
         $match_type = $request->input('match_type') ? $request->input('match_type') : 1; //比赛类型 1：足球 2：篮球
         if($match_type == 1){
             $league_name = "英超,意甲,西甲,德甲,法甲,中超,欧冠,亚冠,日职,日亿,美职足,俄超,瑞超,挪超,巴甲";
-            $league = Fleague::whereIn('league_name', explode(',', $league_name))->select('league_id','league_name')->get()->toarray();
+            $league = Fleague::whereIn('league_name', explode(',', $league_name))->select('league_id','league_name','logo_path')->get()->toarray();
         }
         if($match_type == 2){
             $league_name = "NBA,CBA";
-            $league = Bleague::whereIn('league_name', explode(',', $league_name))->select('league_id','league_name')->get()->toarray();
+            $league = Bleague::whereIn('league_name', explode(',', $league_name))->select('league_id','league_name','logo_path')->get()->toarray();
         }
         // $log = DB::getQueryLog($league);
        // dd($log);

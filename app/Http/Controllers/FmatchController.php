@@ -204,16 +204,42 @@ class FmatchController extends Controller
 
 
     public function history_match(Request $request){
+        $data = [];
+        $datas = [];
+        $match_type = $request->input('match_type') ? $request->input('match_type') : 1; //比赛类型 1：足球 2：篮球
         $match_id = $request->input('match_id') ? $request->input('match_id') : 0;
-        $fmatch = Fmatch::where('match_id', $match_id)->select('home_id','guest_id')->get()->toarray();
-        $data=[];
-        $match = Fmatch::where('match_id','<>', $match_id)->where('home_id',$fmatch[0]['home_id'])->where('guest_id',$fmatch[0]['guest_id'])->orwhere('home_id',$fmatch[0]['guest_id'])->where('guest_id',$fmatch[0]['home_id'])->where('match_id','<>', $match_id)->select('league_name','match_time','home_id','guest_id','home_name','guest_name','score')->skip(0)->take(10)->orderBy('match_time', 'desc')->get()->toarray();
+        if($match_id&&$match_type==1){
+            $fmatch = Fmatch::where('match_id', $match_id)->select('home_id','guest_id')->get()->toarray();
+            $match = Fmatch::where('match_state','-1')->where('match_id','<>', $match_id)->where('home_id',$fmatch[0]['home_id'])->where('guest_id',$fmatch[0]['guest_id'])->orwhere('home_id',$fmatch[0]['guest_id'])->where('match_state','-1')->where('guest_id',$fmatch[0]['home_id'])->where('match_id','<>', $match_id)->select('league_name','match_time','home_id','guest_id','home_name','guest_name','score')->skip(0)->take(10)->orderBy('match_time', 'desc')->get()->toarray();
+            if ($match) {
+                $data = Fmatch::data_match($match,$fmatch[0]['home_id'],$fmatch[0]['guest_id']);
+            }
+            
+            //主场的历史交锋、
+            $match_home = Fmatch::where('match_state','-1')->where('match_id','<>', $match_id)->where('home_id',$fmatch[0]['home_id'])->where('guest_id',$fmatch[0]['guest_id'])->select('home_id','guest_id','league_name','match_time','home_name','guest_name','score')->skip(0)->take(10)->orderBy('match_time', 'desc')->get()->toarray();
+            if ($match_home) {
+                $datas = Fmatch::data_match($match_home,$fmatch[0]['home_id'],$fmatch[0]['guest_id']);
+            }
+            
+        }
 
-        $data = Fmatch::data_match($match,$fmatch[0]['home_id'],$fmatch[0]['guest_id']);
-
-        //主场的历史交锋、
-        $match_home = Fmatch::where('match_id','<>', $match_id)->where('home_id',$fmatch[0]['home_id'])->where('guest_id',$fmatch[0]['guest_id'])->select('home_id','guest_id','league_name','match_time','home_name','guest_name','score')->skip(0)->take(10)->orderBy('match_time', 'desc')->get()->toarray();
-        $datas = Fmatch::data_match($match_home,$fmatch[0]['home_id'],$fmatch[0]['guest_id']);
+        //竞彩篮球
+        if($match_id&&$match_type==2){
+            $bmatch = Bmatch::where('id', $match_id)->select('home_id','away_id')->get()->toarray();
+            //SELECT * FROM d_bmatch WHERE home_id=64 AND away_id=928 and state='-1' and id!=1393 or home_id=928 AND away_id=64 AND state='-1' and id!=1393;
+            $match = Bmatch::where('state','-1')->where('id','<>', $match_id)->where('home_id',$bmatch[0]['home_id'])->where('away_id',$bmatch[0]['away_id'])->orwhere('home_id',$bmatch[0]['away_id'])->where('state','-1')->where('away_id',$bmatch[0]['home_id'])->where('id','<>', $match_id)->select('league_name','match_time','home_id','away_id','home_name','away_name','score')->skip(0)->take(10)->orderBy('match_time', 'desc')->get()->toarray();
+            //var_dump($match);
+            if($match){
+                $data=Bmatch::data_match($match,$bmatch[0]['home_id'],$bmatch[0]['away_id']);
+            }
+            //主场的历史交锋
+            $match_home = Bmatch::where('state','-1')->where('id','<>', $match_id)->where('home_id',$bmatch[0]['home_id'])->where('away_id',$bmatch[0]['away_id'])->select('league_name','match_time','home_id','away_id','home_name','away_name','score')->skip(0)->take(10)->orderBy('match_time', 'desc')->get()->toarray();
+            //var_dump($match);
+            if($match_home){
+                $datas=Bmatch::data_match($match_home,$bmatch[0]['home_id'],$bmatch[0]['away_id']);
+            }
+        }
+        
         $row['all'] = $data;
         $row['all_home'] = $datas;
         return ['code' => 1,'success' => true,'list' => $row];
@@ -221,29 +247,71 @@ class FmatchController extends Controller
 
 
     public function home_history_match(Request $request){
+        $data = [];
+        $datas = [];
+        $data2 = [];
+        $datas2 = [];
+
+        $match_type = $request->input('match_type') ? $request->input('match_type') : 1; //比赛类型 1：足球 2：篮球
         $match_id = $request->input('match_id') ? $request->input('match_id') : 0;
-        $fmatch = Fmatch::where('match_id', $match_id)->select('home_id','guest_id')->get()->toarray();
-        $data=[];
-        //SELECT league_name,match_time,home_name,guest_name,score,home_id,guest_id FROM d_match WHERE home_id =13  AND match_id!=2467 and match_time < '2020-10-29' or  guest_id= 13  AND match_id!=2467   and match_time < '2020-10-29' ORDER BY match_time desc limit 10
+        if($match_type==1){
+            $fmatch = Fmatch::where('match_id', $match_id)->select('home_id','guest_id')->get()->toarray();
+            //SELECT league_name,match_time,home_name,guest_name,score,home_id,guest_id FROM d_match WHERE home_id =13  AND match_id!=2467 and match_time < '2020-10-29' or  guest_id= 13  AND match_id!=2467   and match_time < '2020-10-29' ORDER BY match_time desc limit 10
+       
+            $match = Fmatch::where('match_id','<>', $match_id)->where('home_id',$fmatch[0]['home_id'])->where('score','<>','')->orwhere('score','<>','')->where('guest_id',$fmatch[0]['home_id'])->where('match_id','<>', $match_id)->select('league_name','match_time','home_id','guest_id','home_name','guest_name','score')->skip(0)->take(10)->orderBy('match_time', 'desc')->get()->toarray();
+            if($match){
+                $data = Fmatch::data_match($match,$fmatch[0]['home_id'],$fmatch[0]['guest_id']);
+            }
+            
 
-        $match = Fmatch::where('match_id','<>', $match_id)->where('home_id',$fmatch[0]['home_id'])->where('score','<>','')->orwhere('score','<>','')->where('guest_id',$fmatch[0]['home_id'])->where('match_id','<>', $match_id)->select('league_name','match_time','home_id','guest_id','home_name','guest_name','score')->skip(0)->take(10)->orderBy('match_time', 'desc')->get()->toarray();
-
-        $data = Fmatch::data_match($match,$fmatch[0]['home_id'],$fmatch[0]['guest_id']);
-
-        //主场的历史交锋、
-        $match_home = Fmatch::where('match_id','<>', $match_id)->where('home_id',$fmatch[0]['home_id'])->where('score','<>','')->select('league_name','match_time','home_id','guest_id','home_name','guest_name','score')->skip(0)->take(10)->orderBy('match_time', 'desc')->get()->toarray();
-        $datas = Fmatch::data_match($match_home,$fmatch[0]['home_id'],$fmatch[0]['guest_id']);
-
-
-
-        $k_match = Fmatch::where('match_id','<>', $match_id)->where('home_id',$fmatch[0]['guest_id'])->where('score','<>','')->orwhere('score','<>','')->where('guest_id',$fmatch[0]['guest_id'])->where('match_id','<>', $match_id)->select('league_name','match_time','home_id','guest_id','home_name','guest_name','score')->skip(0)->take(10)->orderBy('match_time', 'desc')->get()->toarray();
-        $data2 = Fmatch::data_match($k_match,$fmatch[0]['home_id'],$fmatch[0]['guest_id']);
-
-        //主场的历史交锋、
-        $match_guest = Fmatch::where('match_id','<>', $match_id)->where('home_id',$fmatch[0]['guest_id'])->where('score','<>','')->select('league_name','match_time','home_id','guest_id','home_name','guest_name','score')->skip(0)->take(10)->orderBy('match_time', 'desc')->get()->toarray();
-        $datas2 = Fmatch::data_match($match_guest,$fmatch[0]['home_id'],$fmatch[0]['guest_id']);
+            //主场的历史交锋、
+            $match_home = Fmatch::where('match_id','<>', $match_id)->where('home_id',$fmatch[0]['home_id'])->where('score','<>','')->select('league_name','match_time','home_id','guest_id','home_name','guest_name','score')->skip(0)->take(10)->orderBy('match_time', 'desc')->get()->toarray();
+            if($match_home){
+                $datas = Fmatch::data_match($match_home,$fmatch[0]['home_id'],$fmatch[0]['guest_id']);
+            }
 
 
+
+            $k_match = Fmatch::where('match_id','<>', $match_id)->where('home_id',$fmatch[0]['guest_id'])->where('score','<>','')->orwhere('score','<>','')->where('guest_id',$fmatch[0]['guest_id'])->where('match_id','<>', $match_id)->select('league_name','match_time','home_id','guest_id','home_name','guest_name','score')->skip(0)->take(10)->orderBy('match_time', 'desc')->get()->toarray();
+            if($k_match){
+                $data2 = Fmatch::data_match($k_match,$fmatch[0]['home_id'],$fmatch[0]['guest_id']);
+            }
+
+            //客场的历史交锋、
+            $match_guest = Fmatch::where('match_id','<>', $match_id)->where('guest_id',$fmatch[0]['guest_id'])->where('score','<>','')->select('league_name','match_time','home_id','guest_id','home_name','guest_name','score')->skip(0)->take(10)->orderBy('match_time', 'desc')->get()->toarray();
+            if($match_guest){
+                $datas2 = Fmatch::data_match($match_guest,$fmatch[0]['home_id'],$fmatch[0]['guest_id']);
+            }
+        }
+
+        if($match_type==2){
+            //SELECT league_name,match_time,home_name,away_name,score,home_id,away_id,state FROM d_bmatch WHERE home_id =928  AND id!=1393 AND state='-1' or  away_id= 928  AND id!=1393  AND state='-1'  ORDER BY match_time desc limit 10;
+            $bmatch = Bmatch::where('id', $match_id)->select('home_id','away_id')->get()->toarray();
+
+            $match = Bmatch::where('id','<>', $match_id)->where('home_id',$bmatch[0]['home_id'])->where('state','-1')->orwhere('state','-1')->where('away_id',$bmatch[0]['home_id'])->where('id','<>', $match_id)->select('league_name','match_time','home_id','away_id','home_name','away_name','score')->skip(0)->take(10)->orderBy('match_time', 'desc')->get()->toarray();
+            if($match){
+                $data = Bmatch::data_match($match,$bmatch[0]['home_id'],$bmatch[0]['away_id']);
+            }
+            //主场的历史交锋、
+            $match_home = Bmatch::where('id','<>', $match_id)->where('home_id',$bmatch[0]['home_id'])->where('state','-1')->select('league_name','match_time','home_id','away_id','home_name','away_name','score')->skip(0)->take(10)->orderBy('match_time', 'desc')->get()->toarray();
+            if($match_home){
+                $datas = Bmatch::data_match($match_home,$bmatch[0]['home_id'],$bmatch[0]['away_id']);
+            }
+
+
+            //客队全部历史数据
+            $k_match = Bmatch::where('id','<>', $match_id)->where('home_id',$bmatch[0]['away_id'])->where('state','-1')->orwhere('state','-1')->where('away_id',$bmatch[0]['away_id'])->where('id','<>', $match_id)->select('league_name','match_time','home_id','away_id','home_name','away_name','score')->skip(0)->take(10)->orderBy('match_time', 'desc')->get()->toarray();
+            if($k_match){
+                $data2 = Bmatch::data_match($k_match,$bmatch[0]['home_id'],$bmatch[0]['away_id']);
+            }
+
+            //客场的历史交锋、
+            $match_guest = Bmatch::where('id','<>', $match_id)->where('away_id',$bmatch[0]['away_id'])->where('state','-1')->select('league_name','match_time','home_id','away_id','home_name','away_name','score')->skip(0)->take(10)->orderBy('match_time', 'desc')->get()->toarray();
+            if($match_guest){
+                $datas2 = Bmatch::data_match($match_guest,$bmatch[0]['home_id'],$bmatch[0]['away_id']);
+            }
+
+        }
 
         $row['home_all'] = $data;
         $row['match_home'] = $datas;

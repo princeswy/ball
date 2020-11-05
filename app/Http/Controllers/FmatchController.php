@@ -324,13 +324,15 @@ class FmatchController extends Controller
 
 //未来赛事
     public function future_match(Request $request){
+         $match_type = $request->input('match_type') ? $request->input('match_type') : 1; //比赛类型 1：足球 2：篮球
         $match_id = $request->input('match_id') ? $request->input('match_id') : 0;
-        $fmatch = Fmatch::where('match_id', $match_id)->select('home_id','guest_id','match_time')->get()->toarray();
+        
 
         //SELECT league_name,match_time,home_name,guest_name,score,home_id,guest_id FROM d_match WHERE home_id =38549   and match_time > '2020-10-29 03:00:00' or  guest_id= 38549     and match_time > '2020-10-29 03:00:00' ORDER BY match_time desc limit 10
         if($match_type==1){
-        $data['guest'] = Fmatch::where('match_time','>', $fmatch[0]['match_time'])->where('home_id',$fmatch[0]['guest_id'])->orwhere('guest_id',$fmatch[0]['guest_id'])->where('match_time','>', $fmatch[0]['match_time'])->select('league_name','match_time','home_id','guest_id','home_name','guest_name')->skip(0)->take(10)->orderBy('match_time', 'desc')->get()->toarray();
-        $data['home'] = Fmatch::where('match_time','>', $fmatch[0]['match_time'])->where('home_id',$fmatch[0]['home_id'])->orwhere('guest_id',$fmatch[0]['home_id'])->where('match_time','>', $fmatch[0]['match_time'])->select('league_name','match_time','home_id','guest_id','home_name','guest_name')->skip(0)->take(10)->orderBy('match_time', 'desc')->get()->toarray();
+            $fmatch = Fmatch::where('match_id', $match_id)->select('home_id','guest_id','match_time')->get()->toarray();
+            $data['guest'] = Fmatch::where('match_time','>', $fmatch[0]['match_time'])->where('home_id',$fmatch[0]['guest_id'])->orwhere('guest_id',$fmatch[0]['guest_id'])->where('match_time','>', $fmatch[0]['match_time'])->select('league_name','match_time','home_id','guest_id','home_name','guest_name')->skip(0)->take(10)->orderBy('match_time', 'desc')->get()->toarray();
+            $data['home'] = Fmatch::where('match_time','>', $fmatch[0]['match_time'])->where('home_id',$fmatch[0]['home_id'])->orwhere('guest_id',$fmatch[0]['home_id'])->where('match_time','>', $fmatch[0]['match_time'])->select('league_name','match_time','home_id','guest_id','home_name','guest_name')->skip(0)->take(10)->orderBy('match_time', 'desc')->get()->toarray();
         }
         if($match_type==2){
             $Bmatch = Bmatch::where('id', $match_id)->select('home_id','away_id','match_time')->get()->toarray();
@@ -341,7 +343,6 @@ class FmatchController extends Controller
             $data['home'] = Bmatch::where('match_time','>', $Bmatch[0]['match_time'])->where('home_id',$Bmatch[0]['home_id'])->orwhere('away_id',$Bmatch[0]['home_id'])->where('match_time','>', $Bmatch[0]['match_time'])->select('league_name','match_time','home_id','away_id','home_name','away_name')->skip(0)->take(10)->orderBy('match_time', 'desc')->get()->toarray();
 
         }
-
         return ['code' => 1,'success' => true,'list' => $data];
     }
 

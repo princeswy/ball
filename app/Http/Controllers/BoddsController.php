@@ -6,13 +6,10 @@ use App\models\Bhcodds;
 use App\models\Bodds;
 use App\models\Btotalhandicap;
 use Illuminate\Http\Request;
-
-class BmatchoddsController extends Controller
+class BoddsController extends Controller
 {
-    //
-    public function index(Request $request)
-    {
-        //
+    
+    public function odds_list(Request $request){
         $match_id = $request->input('match_id') ? $request->input('match_id') : '';
 
         $odds_type = $request->input('odds_type') ? $request->input('odds_type') : '3W';
@@ -62,7 +59,11 @@ class BmatchoddsController extends Controller
         $data['list'] = array_values($base);
 
         return $data;
-
     }
+
+
+
+    
+
 
 }

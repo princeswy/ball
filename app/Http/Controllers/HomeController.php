@@ -6,6 +6,8 @@ use Illuminate\Http\Request;
 use App\models\Country;
 use App\models\Fleague;
 use App\models\Fseason;
+use App\models\Bleague;
+use App\models\Bseason;
 use DB;
 class HomeController extends Controller
 {

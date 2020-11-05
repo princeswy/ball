@@ -107,7 +107,7 @@ class FmatchController extends Controller
             if ($match_state == 3) {
                 $Bmatch = $Bmatch->where('state', '-1');
             }
-            $Bmatch_map = $Bmatch->orderBy('match_time', 'asc')->select(DB::raw("$match_type as match_type"),'id as match_id','out_match_id','league_id','season_id','league_name','match_time','home_name','away_name','home_id','away_id','state as match_state','score','first_score','second_score','third_score','fourth_score','overtimes','firstot','secondot','thirdot')->get();
+            $Bmatch_map = $Bmatch->orderBy('match_time', 'asc')->select(DB::raw("$match_type as match_type"),'id as match_id','out_match_id','league_id','season_id','league_name','match_time','home_name','away_name','home_id','away_id','state as match_state','score','first_score','second_score','third_score','fourth_score','overtimes','firstot','secondot','thirdot','remain_time')->get();
             if (!$Bmatch_map) {
                 $res['list'] = [];
                 return $res;
@@ -305,9 +305,9 @@ class FmatchController extends Controller
         }else{
             //竞彩篮球的
             if ($match_id) {
-                $match = Bmatch::where('id', $match_id)->select('id as match_id','out_match_id','league_id','season_id','league_name','match_time','home_name','away_name','home_id','away_id','state as match_state','score','first_score','second_score','third_score','fourth_score','overtimes','firstot','secondot','thirdot')->get()->toarray();
+                $match = Bmatch::where('id', $match_id)->select('id as match_id','out_match_id','league_id','season_id','league_name','match_time','home_name','away_name','home_id','away_id','state as match_state','score','first_score','second_score','third_score','fourth_score','overtimes','firstot','secondot','thirdot','remain_time')->get()->toarray();
             } else if ($out_match_id) {
-                $match = Bmatch::where('out_match_id', $out_match_id)->select('id as match_id','out_match_id','league_id','season_id','league_name','match_time','home_name','away_name','home_id','away_id','state as match_state','score','first_score','second_score','third_score','fourth_score','overtimes','firstot','secondot','thirdot')->get()->toarray();
+                $match = Bmatch::where('out_match_id', $out_match_id)->select('id as match_id','out_match_id','league_id','season_id','league_name','match_time','home_name','away_name','home_id','away_id','state as match_state','score','first_score','second_score','third_score','fourth_score','overtimes','firstot','secondot','thirdot','remain_time')->get()->toarray();
             } else {
                 return ['code' => 0,'success' => false,'list' => [], 'message' => '参数无效', 'sysTime' => date('Y-m-d H:i:s')];
             }

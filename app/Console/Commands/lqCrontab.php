@@ -142,7 +142,7 @@ class lqCrontab extends  Command
                 }
 
                 if($eventdata){
-                    Bevent::updateOrCreate(['match_id'=>$match_id, $eventdata]);
+                    Bevent::updateOrCreate(['match_id'=>$match_id], $eventdata);
                 }
 
             }
@@ -186,7 +186,7 @@ class lqCrontab extends  Command
                     }
 
                     if($eventdata){
-                        Bevent::updateOrCreate(['match_id'=>$match_id, $eventdata]);
+                        Bevent::updateOrCreate(['match_id'=>$match_id], $eventdata);
                     }
 
                 }

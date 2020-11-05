@@ -136,4 +136,13 @@ class Bmatch extends Model
         $datas['match']=$data;
         return $datas;
     }
+
+    public static function up_match_finish($data)
+    {
+        $affectedRows  = self::where('id',$data['id'])->update($data);
+        ## ****
+//         $redis = Predis::connection('bdata');
+//         $redis->hdel(Bevent::$match_score_key,$data['id']);
+        return $affectedRows;
+    }
 }

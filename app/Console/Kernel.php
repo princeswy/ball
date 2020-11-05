@@ -74,7 +74,7 @@ class Kernel extends ConsoleKernel
         # 球员
         $schedule->command('fmatch:playerTask')->dailyAt('5:00')->runInBackground();
         # 未来N天的比赛
-        $schedule->command('fmatch:matchTask --day=5')->cron('*/60 * * * *')->runInBackground();
+        $schedule->command('fmatch:matchTask --day=5')->cron('0 */2 * * *')->runInBackground();
         # 当天比赛数据
         $schedule->command('fmatch:todayMatchTask')->cron('*/1 * * * *')->runInBackground();
         # 球员伤停
@@ -121,5 +121,9 @@ class Kernel extends ConsoleKernel
         $schedule->command('lq:lqStatistics')->everyTenMinutes()->runInBackground();
         #篮球阵容
         $schedule->command('grab:qtlqLineup')->dailyAt('2:00')->runInBackground();
+        #删除、修改比赛
+        $schedule->command('lq:crontab --type=modify_match')->everyTenMinutes();
+        #当日比分
+        $schedule->command('lq:crontab --type=today_score')->everyTenMinutes()->runInBackground();
     }
 }

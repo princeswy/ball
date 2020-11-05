@@ -7,6 +7,7 @@
  */
 namespace App\Console\Commands;
 
+use App\models\Bevent;
 use App\models\Bleague;
 use App\models\Bmatch;
 use App\models\Bodds;
@@ -118,6 +119,32 @@ class lqCrontab extends  Command
 
                 Bmatch::updateOrCreate($where, $val);
 
+                $eventdata = [];
+                $eventstatus = $val['state'];
+
+                if($eventstatus == '0'){
+                    $eventdata['match_status'] = '0';
+                }
+                # 如果已完场
+                if(in_array($eventstatus, ['-1'])){
+                    $eventdata['status'] = $val['match_state'];
+                    list($eventdata['home_points'] ,$eventdata['away_points']) = explode('-', $val['score']);
+                    $eventdata['home_first'] = $val['home_first_score'];
+                    $eventdata['away_first'] = $val['away_first_score'];
+                    $eventdata['home_second'] = $val['home_second_score'];
+                    $eventdata['away_second'] = $val['away_second_score'];
+                    $eventdata['home_third'] = $val['home_third_score'];
+                    $eventdata['away_third'] = $val['away_third_score'];
+                    $eventdata['home_fourth'] = $val['home_fourth_score'];
+                    $eventdata['away_fourth'] = $val['away_fourth_score'];
+                    $eventdata['home_firstot'] = $val['home_ot'];
+                    $eventdata['away_firstot'] = $val['away_ot'];
+                }
+
+                if($eventdata){
+                    Bevent::updateOrCreate(['match_id'=>$val['match_id'], $eventdata]);
+                }
+
             }
         }
         else if ( $date && $days ) {
@@ -135,6 +162,32 @@ class lqCrontab extends  Command
                     $where = ['out_match_id' => $val['out_match_id'], 'source' => $val['source']];
 
                     Bmatch::updateOrCreate($where, $val);
+
+                    $eventdata = [];
+                    $eventstatus = $val['state'];
+
+                    if($eventstatus == '0'){
+                        $eventdata['match_status'] = '0';
+                    }
+                    # 如果已完场
+                    if(in_array($eventstatus, ['-1'])){
+                        $eventdata['status'] = $val['match_state'];
+                        list($eventdata['home_points'] ,$eventdata['away_points']) = explode('-', $val['score']);
+                        $eventdata['home_first'] = $val['home_first_score'];
+                        $eventdata['away_first'] = $val['away_first_score'];
+                        $eventdata['home_second'] = $val['home_second_score'];
+                        $eventdata['away_second'] = $val['away_second_score'];
+                        $eventdata['home_third'] = $val['home_third_score'];
+                        $eventdata['away_third'] = $val['away_third_score'];
+                        $eventdata['home_fourth'] = $val['home_fourth_score'];
+                        $eventdata['away_fourth'] = $val['away_fourth_score'];
+                        $eventdata['home_firstot'] = $val['home_ot'];
+                        $eventdata['away_firstot'] = $val['away_ot'];
+                    }
+
+                    if($eventdata){
+                        Bevent::updateOrCreate(['match_id'=>$val['match_id'], $eventdata]);
+                    }
 
                 }
                 $this->warn('sleep 90s');
@@ -256,6 +309,85 @@ class lqCrontab extends  Command
         }
 
         echo microtime(true) - $a;
+
+    }
+
+    public function Handle_ModifyMatch(){
+
+        $res = self::send_request(self::$modify_match_url);
+        $data = json_decode($res['content']);
+        $match_data = $data->list;
+
+        $matches = [];
+
+        if ( count($match_data) > 0 ) {
+            foreach ($match_data as $key => $val) {
+                $out_matchid = $val->matchId;
+                $matches[$out_matchid]['type'] = $val->type;
+                $matches[$out_matchid]['matchtime'] = $val->matchTime;
+                $matches[$out_matchid]['oprTime'] = $val->oprTime;
+            }
+
+            foreach ( $matches as $key => $val ) {
+                if ( $val['type'] == 'modify' ) {
+                    Bmatch::where([ 'out_match_id' => $key, 'source' => self::$source ])->update([ 'match_time' => $val['matchtime'] ]);
+                }
+                else if ( $val['type'] == 'delete' ) {
+                    self::delete_match($key);
+                }
+            }
+        }
+
+        $this->info('本次处理'.count($match_data).'条数据');
+
+    }
+
+    public function Handle_score(){
+        set_time_limit(0);
+        $a = microtime(true);
+        $url = "http://interface.win007.com/basketball/today.aspx";
+        $res = self::send_request($url);
+        $data = json_decode($res['content']);
+        $b = microtime(true);echo $b-$a."<br />";
+        $up_match = [];
+        $score = Bevent::convert_qtscore_history($data, $up_match);
+
+        if(!$score){
+            return false;
+        }
+
+        $match_ids = array_column($score, 'match_id');
+
+        $score_redis = Bevent::get_score_redis($match_ids);
+
+        $up_score = [];
+
+        ## ****** execute push_live_queue ******
+        foreach ($score as $key=>$val){
+            if(!isset($score_redis[$key]) || !$score_redis[$key] || $score_redis[$key] != json_encode($val)){
+                $up_score[$key] = json_encode($val);
+                Bevent::updateOrCreate(['match_id' => $key,],$val);
+                Bevent::write_bscore($val);
+            }
+        }
+
+        $up_score && Bevent::set_score_redis($up_score);
+        if($up_match){
+            foreach ($up_match as $key=>$val){
+                $val['state'] = $val['match_state'];
+                unset($val['match_state']);
+                $ret[$key] = Bmatch::up_match_finish($val);
+            }
+        }
+        $b = microtime(true);echo $b-$a."\n";
+
+    }
+
+    public static function delete_match($out_matchid) {
+        #废弃比赛
+        Bmatch::where('out_match_id', $out_matchid)->update( [ 'season_id' => 0, 'match_time' => '1970-01-01 08:00:00' ] );
+
+        return true;
 
     }
 

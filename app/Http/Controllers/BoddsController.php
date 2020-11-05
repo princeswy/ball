@@ -2,27 +2,22 @@
 
 namespace App\Http\Controllers;
 
-use App\models\Bhcodds;
-use App\models\Bodds;
-use App\models\Btotalhandicap;
 use Illuminate\Http\Request;
 class BoddsController extends Controller
 {
+
+    static $odds_function = [
+        '3W' => ['App\models\Bodds','get_odds'],
+        'rf' => ['App\models\Bhcodds','get_odds'],
+        'dxf' => ['App\models\Btotalhandicap', 'get_odds'],
+    ];
     
     public function odds_list(Request $request){
         $match_id = $request->input('match_id') ? $request->input('match_id') : '';
 
         $odds_type = $request->input('odds_type') ? $request->input('odds_type') : '3W';
 
-        if ($odds_type === '3W') {
-            $odds = Bodds::get_odds([$match_id]);
-        }
-        if ($odds_type === 'rf') {
-            $odds = Bhcodds::get_odds([$match_id]);
-        }
-        if ($odds_type === 'dxf') {
-            $odds = Btotalhandicap::get_odds([$match_id]);
-        }
+        $odds = call_user_func_array(self::$odds_function[$odds_type], [[$match_id]]);
 
 //        $odds = call_user_func_array(self::$odds_function[$odds_type], [[$match_id]]);
 

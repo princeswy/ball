@@ -45,6 +45,7 @@ class Kernel extends ConsoleKernel
         \App\Console\Commands\hOddsTask::class,
         \App\Console\Commands\matchDetailTask::class,
         \App\Console\Commands\FScoreLive::class,
+        \App\Console\Commands\modifyTask::class,
         \App\Console\Commands\fLiveScore::class,
 
         // 篮球
@@ -66,7 +67,7 @@ class Kernel extends ConsoleKernel
     {
         //足球
         # 球探联赛数据
-        $schedule->command('fmatch:leagueTask')->dailyAt('3:30')->runInBackground()->withoutOverlapping()->withoutOverlapping();
+        $schedule->command('fmatch:leagueTask')->dailyAt('3:30')->runInBackground()->withoutOverlapping();
         # 赛事阶段
         $schedule->command('fmatch:sectionTask')->dailyAt('4:00')->runInBackground()->withoutOverlapping();
         # 裁判
@@ -78,7 +79,7 @@ class Kernel extends ConsoleKernel
         # 未来N天的比赛
         $schedule->command('fmatch:matchTask --day=5')->cron('0 */2 * * *')->runInBackground()->withoutOverlapping();
         # 当天比赛数据
-        $schedule->command('fmatch:todayMatchTask')->cron('*/1 * * * *')->runInBackground()->withoutOverlapping();
+        $schedule->command('fmatch:todayMatchTask')->everyTenMinutes()->runInBackground()->withoutOverlapping();
         # 球员伤停
         $schedule->command('fmatch:missPlayerTask')->cron('*/2 * * * *')->runInBackground()->withoutOverlapping();
         # 阵容
@@ -124,7 +125,8 @@ class Kernel extends ConsoleKernel
         #篮球阵容
         $schedule->command('grab:qtlqLineup')->dailyAt('2:00')->runInBackground()->withoutOverlapping();
         #删除、修改比赛
-        $schedule->command('lq:crontab --type=modify_match')->everyTenMinutes();
+        $schedule->command('lq:crontab --type=modify_match')->everyTenMinutes()->runInBackground()->withoutOverlapping();
+        $schedule->command('fmatch:modify')->everyTenMinutes()->runInBackground()->withoutOverlapping();
         #当日比分
         $schedule->command('lq:crontab --type=today_score')->everyTenMinutes()->runInBackground()->withoutOverlapping();
         #篮球比分直播

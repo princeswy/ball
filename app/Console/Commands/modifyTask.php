@@ -59,10 +59,10 @@ class modifyTask extends  Command
             foreach ( $matches as $key => $val ) {
                 if ( $val['type'] == 'modify' ) {
                     Fmatch::where('out_match_id', $key)->update(['match_time' => $val['matchtime']]);
-                    Fevent::where('out_match_id', $key)->update(['start_time' => $val['matchtime']]);
+                    Fevent::where('out_matchid', $key)->update(['start_time' => $val['matchtime']]);
                 } else if ($val['type'] == 'delete') {
                     Fmatch::where('out_match_id', $key)->delete();
-                    Fevent::where('out_match_id', $key)->delete();
+                    Fevent::where('out_matchid', $key)->delete();
                 }
             }
         }

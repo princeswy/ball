@@ -100,7 +100,7 @@ class lqCrontab extends  Command
 
             if ($data) foreach ($data as $key=>&$val) {
 
-                vv($val['out_match_id']);
+                vv($val);
                 $where = ['out_match_id' => $val['out_match_id'], 'source' => $val['source']];
 
                 $match_id = Bmatch::updateOrCreate($where, $val)->id;
@@ -113,15 +113,15 @@ class lqCrontab extends  Command
                 }
                 # 如果已完场
                 if(in_array($eventstatus, ['-1'])){
-                    $eventdata['status'] = $val['state'];
+                    $eventdata['match_status'] = $val['state'];
                     list($eventdata['home_points'] ,$eventdata['away_points']) = explode('-', $val['score']);
                     list($eventdata['home_first'], $eventdata['away_first']) = explode('-', $val['first_score']);
                     list($eventdata['home_second'], $eventdata['away_second']) = explode('-', $val['second_score']);
                     list($eventdata['home_third'], $eventdata['away_third']) = explode('-', $val['third_score']);
                     list($eventdata['home_fourth'], $eventdata['away_fourth']) = explode('-', $val['fourth_score']);
-                    list($eventdata['home_firstot'], $eventdata['away_firstot']) = explode('-', $val['firstot']);
-                    list($eventdata['home_secondot'], $eventdata['away_secondot']) = explode('-', $val['secondot']);
-                    list($eventdata['home_thirdot'], $eventdata['away_thirdot']) = explode('-', $val['thirdot']);
+                    strstr($val['firstot'], '-') && list($eventdata['home_firstot'], $eventdata['away_firstot']) = explode('-', $val['firstot']);
+                    strstr($val['secondot'], '-') && list($eventdata['home_secondot'], $eventdata['away_secondot']) = explode('-', $val['secondot']);
+                    strstr($val['thirdot'], '-') && list($eventdata['home_thirdot'], $eventdata['away_thirdot']) = explode('-', $val['thirdot']);
                 }
 
                 if($eventdata){
@@ -154,15 +154,15 @@ class lqCrontab extends  Command
                     }
                     # 如果已完场
                     if(in_array($eventstatus, ['-1'])){
-                        $eventdata['status'] = $val['state'];
+                        $eventdata['match_status'] = $val['state'];
                         list($eventdata['home_points'] ,$eventdata['away_points']) = explode('-', $val['score']);
                         list($eventdata['home_first'], $eventdata['away_first']) = explode('-', $val['first_score']);
                         list($eventdata['home_second'], $eventdata['away_second']) = explode('-', $val['second_score']);
                         list($eventdata['home_third'], $eventdata['away_third']) = explode('-', $val['third_score']);
                         list($eventdata['home_fourth'], $eventdata['away_fourth']) = explode('-', $val['fourth_score']);
-                        list($eventdata['home_firstot'], $eventdata['away_firstot']) = explode('-', $val['firstot']);
-                        list($eventdata['home_secondot'], $eventdata['away_secondot']) = explode('-', $val['secondot']);
-                        list($eventdata['home_thirdot'], $eventdata['away_thirdot']) = explode('-', $val['thirdot']);
+                        strstr($val['firstot'], '-') && list($eventdata['home_firstot'], $eventdata['away_firstot']) = explode('-', $val['firstot']);
+                        strstr($val['secondot'], '-') && list($eventdata['home_secondot'], $eventdata['away_secondot']) = explode('-', $val['secondot']);
+                        strstr($val['thirdot'], '-') && list($eventdata['home_thirdot'], $eventdata['away_thirdot']) = explode('-', $val['thirdot']);
                     }
 
                     if($eventdata){

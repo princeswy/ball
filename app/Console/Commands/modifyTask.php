@@ -52,15 +52,15 @@ class modifyTask extends  Command
 
             $matchid_map = [];
 
-            $match_arr = Fmatch::whereIn('out_match_id', $out_matchid_map)->get(['id', 'out_match_id']);
+            $match_arr = Fmatch::whereIn('out_match_id', $out_matchid_map)->get(['match_id', 'out_match_id']);
 
-            $match_arr && $matchid_map = array_column( $match_arr->toArray(), 'id', 'out_match_id' );
+            $match_arr && $matchid_map = array_column( $match_arr->toArray(), 'match_id', 'out_match_id' );
 
             foreach ( $matches as $key => $val ) {
                 if ( $val['type'] == 'modify' ) {
                     if ( $matchid_map[$key] ) {
                         $match_id = $matchid_map[$key];
-                        Fmatch::where('id', $match_id)->update([ 'match_time' => $val['matchtime'] ]);
+                        Fmatch::where('match_id', $match_id)->update([ 'match_time' => $val['matchtime'] ]);
                         Fevent::where('match_id', $match_id)->update([ 'start_time' => $val['matchtime'] ]);
                     }
 

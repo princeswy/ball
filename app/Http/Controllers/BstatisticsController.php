@@ -90,14 +90,15 @@ class BstatisticsController extends Controller
             //select player_name,helpattack from d_bstatisplayer where team_id=65 order by helpattack desc limit 1;
             $home_helpattack = Bstatisplayer::join('d_bplayer','d_bplayer.id', '=', 'player_id')->where('d_bstatisplayer.team_id', $bmatch[0]['home_id'])->select('d_bplayer.player_name','helpattack','d_bplayer.photo','d_bplayer.number')->skip(0)->take(1)->orderBy('helpattack', 'desc')->get()->toarray();
             $away_helpattack = Bstatisplayer::join('d_bplayer','d_bplayer.id', '=', 'player_id')->where('d_bstatisplayer.team_id', $bmatch[0]['away_id'])->select('d_bplayer.player_name','helpattack','d_bplayer.photo','d_bplayer.number')->skip(0)->take(1)->orderBy('helpattack', 'desc')->get()->toarray();
-            
-            $data['home']['score'] = $home_score?$home_score[0]:[];
-            $data['home']['shoot'] = $home_shoot?$home_shoot[0]:[];
-            $data['home']['helpattack'] = $home_helpattack?$home_helpattack[0]:[];
+            if($home_score&&$home_shoot&&$home_helpattack&&$away_score&&$away_shoot&&$away_helpattack){
+                $data['home']['score'] = $home_score?$home_score[0]:[];
+                $data['home']['shoot'] = $home_shoot?$home_shoot[0]:[];
+                $data['home']['helpattack'] = $home_helpattack?$home_helpattack[0]:[];
 
-            $data['away']['score'] = $away_score?$away_score[0]:[];
-            $data['away']['shoot'] = $away_shoot?$away_shoot[0]:[];
-            $data['away']['helpattack'] = $away_helpattack?$away_helpattack[0]:[];
+                $data['away']['score'] = $away_score?$away_score[0]:[];
+                $data['away']['shoot'] = $away_shoot?$away_shoot[0]:[];
+                $data['away']['helpattack'] = $away_helpattack?$away_helpattack[0]:[];
+            }
         }
         return ['code' => 1,'success' => true,'list' => $data];
         

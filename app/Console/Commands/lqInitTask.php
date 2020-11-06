@@ -15,6 +15,7 @@ use Illuminate\Console\Command;
 use GuzzleHttp\Client;
 use GuzzleHttp\Psr7\Request;
 use GuzzleHttp\Exception\RequestException;
+use Illuminate\Support\Facades\Artisan;
 
 class lqInitTask extends  Command
 {
@@ -56,6 +57,9 @@ class lqInitTask extends  Command
                 break;
             case 'league' :
                 $this->Handle_League();
+                break;
+            case 'league_score_table' :
+                $this->Handle_League_ScoreTable();
                 break;
 
         }
@@ -191,6 +195,15 @@ class lqInitTask extends  Command
             }
         }
 
+    }
+    
+    public function Handle_League_ScoreTable() {
+        $league_map = Bleague::get(['out_league_id'])->toArray();
+        foreach($league_map as $key => $val) {
+            Artisan::call( 'lq:crontab', [ '--type' => 'score_table', '--league_id' => $val['out_league_id']] );
+            $this->info('sleep 10s');
+            sleep(10);
+        }
     }
 
     /**

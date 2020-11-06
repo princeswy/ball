@@ -113,11 +113,11 @@ class Kernel extends ConsoleKernel
 
         $schedule->command('lq:crontab --type=match --days=5')->cron('0 */2 * * *')->runInBackground()->withoutOverlapping();
 
-        $schedule->command('lq:crontab --type=3w_odds')->cron('*/3 * * * *');
-        $schedule->command('lq:crontab --type=3w_odds --time=4')->cron('8,38 * * * *');
-        $schedule->command('lq:crontab --type=odds --odds_type=3W')->cron('*/3 * * * *');
-        $schedule->command('lq:crontab --type=odds --odds_type=HC')->cron('*/4 * * * *');
-        $schedule->command('lq:crontab --type=odds --odds_type=asian_total')->cron('*/5 * * * *');
+        $schedule->command('lq:crontab --type=3w_odds')->cron('8,38 * * * *')->runInBackground()->withoutOverlapping();
+        $schedule->command('lq:crontab --type=3w_odds --time=4')->everyFiveMinutes()->runInBackground()->withoutOverlapping();
+        $schedule->command('lq:crontab --type=odds --odds_type=3W')->everyFiveMinutes()->runInBackground()->withoutOverlapping();
+        $schedule->command('lq:crontab --type=odds --odds_type=HC')->everyFiveMinutes()->runInBackground()->withoutOverlapping();
+        $schedule->command('lq:crontab --type=odds --odds_type=asian_total')->everyFiveMinutes()->runInBackground()->withoutOverlapping();
 
         #抓取球探篮球技术统计
         $schedule->command('lq:lqStatistics')->everyTenMinutes()->runInBackground()->withoutOverlapping();

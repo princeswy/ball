@@ -1,1 +1,1 @@
-/usr/local/php/sbin/php-fpm && nohup php /usr/local/ball/artisan fmatch:socket & && nohup php /usr/local/ball/artisan push:ball && nginx
+/usr/local/php/sbin/php-fpm && nohup php /usr/local/ball/artisan fmatch:socket & && nohup php /usr/local/ball/artisan push:ball & && nginx

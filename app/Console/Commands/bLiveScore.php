@@ -68,7 +68,7 @@ class bLiveScore extends Command
     {
         if ('cli' == php_sapi_name()) {
 
-            $port = 9502;
+            $port = 9503;
             $this->server = new swoole_websocket_server($this->server_ip, $port);
             $this->server->set([
                 'worker_num' => 4,

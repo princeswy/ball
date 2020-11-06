@@ -100,7 +100,6 @@ class lqCrontab extends  Command
 
             if ($data) foreach ($data as $key=>&$val) {
 
-                vv($val);
                 $where = ['out_match_id' => $val['out_match_id'], 'source' => $val['source']];
 
                 $match_id = Bmatch::updateOrCreate($where, $val)->id;

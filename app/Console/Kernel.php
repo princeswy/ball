@@ -66,52 +66,52 @@ class Kernel extends ConsoleKernel
     {
         //足球
         # 球探联赛数据
-        $schedule->command('fmatch:leagueTask')->dailyAt('3:30')->runInBackground();
+        $schedule->command('fmatch:leagueTask')->dailyAt('3:30')->runInBackground()->withoutOverlapping()->withoutOverlapping();
         # 赛事阶段
-        $schedule->command('fmatch:sectionTask')->dailyAt('4:00')->runInBackground();
+        $schedule->command('fmatch:sectionTask')->dailyAt('4:00')->runInBackground()->withoutOverlapping();
         # 裁判
-        $schedule->command('fmatch:refereeTask')->dailyAt('3:00')->runInBackground();
+        $schedule->command('fmatch:refereeTask')->dailyAt('3:00')->runInBackground()->withoutOverlapping();
         # 球队
-        $schedule->command('fmatch:teamTask')->dailyAt('4:00')->runInBackground();
+        $schedule->command('fmatch:teamTask')->dailyAt('4:00')->runInBackground()->withoutOverlapping();
         # 球员
-        $schedule->command('fmatch:playerTask')->dailyAt('5:00')->runInBackground();
+        $schedule->command('fmatch:playerTask')->dailyAt('5:00')->runInBackground()->withoutOverlapping();
         # 未来N天的比赛
-        $schedule->command('fmatch:matchTask --day=5')->cron('0 */2 * * *')->runInBackground();
+        $schedule->command('fmatch:matchTask --day=5')->cron('0 */2 * * *')->runInBackground()->withoutOverlapping();
         # 当天比赛数据
-        $schedule->command('fmatch:todayMatchTask')->cron('*/1 * * * *')->runInBackground();
+        $schedule->command('fmatch:todayMatchTask')->cron('*/1 * * * *')->runInBackground()->withoutOverlapping();
         # 球员伤停
-        $schedule->command('fmatch:missPlayerTask')->cron('*/2 * * * *')->runInBackground();
+        $schedule->command('fmatch:missPlayerTask')->cron('*/2 * * * *')->runInBackground()->withoutOverlapping();
         # 阵容
-        $schedule->command('fmatch:lineUpTask')->cron('*/2 * * * *')->runInBackground();
+        $schedule->command('fmatch:lineUpTask')->cron('*/2 * * * *')->runInBackground()->withoutOverlapping();
         # 积分榜
-        $schedule->command('fmatch:scoreTableTask')->cron('0  */4  *  *  *')->runInBackground();
+        $schedule->command('fmatch:scoreTableTask')->cron('0  */4  *  *  *')->runInBackground()->withoutOverlapping();
         # 射手榜
-        $schedule->command('fmatch:shootersTask')->dailyAt('5:00')->runInBackground();
+        $schedule->command('fmatch:shootersTask')->dailyAt('5:00')->runInBackground()->withoutOverlapping();
         # 球员详细技术统计榜
-        $schedule->command('fmatch:playerCountTask')->cron('*/30 * * * *')->runInBackground();
+        $schedule->command('fmatch:playerCountTask')->cron('*/30 * * * *')->runInBackground()->withoutOverlapping();
         # 欧赔
-        $schedule->command('fmatch:oddsTask')->cron('*/3 * * * *')->runInBackground();
-        $schedule->command('fmatch:oddsTask')->cron('8,38 * * * *')->runInBackground();
+        $schedule->command('fmatch:oddsTask')->cron('*/3 * * * *')->runInBackground()->withoutOverlapping();
+        $schedule->command('fmatch:oddsTask')->cron('8,38 * * * *')->runInBackground()->withoutOverlapping();
         # 亚盘
-        $schedule->command('fmatch:hOddsTask --odds_type=1')->everyThirtyMinutes()->runInBackground();
+        $schedule->command('fmatch:hOddsTask --odds_type=1')->everyThirtyMinutes()->runInBackground()->withoutOverlapping();
         # 大小球
-        $schedule->command('fmatch:hOddsTask --odds_type=2')->everyThirtyMinutes()->runInBackground();
+        $schedule->command('fmatch:hOddsTask --odds_type=2')->everyThirtyMinutes()->runInBackground()->withoutOverlapping();
         # 比赛技术统计
-        $schedule->command('fmatch:matchDetail')->everyMinute()->runInBackground();
+        $schedule->command('fmatch:matchDetail')->everyMinute()->runInBackground()->withoutOverlapping();
         # 欧赔
-        $schedule->command('fmatch:liveScore')->cron('*/2 * * * *')->runInBackground();
+        $schedule->command('fmatch:liveScore')->cron('*/2 * * * *')->runInBackground()->withoutOverlapping();
 
         ####篮球####
         #抓取球探篮球联赛
-        $schedule->command('lq:init --type=league')->cron('*/60 * * * *')->runInBackground();
+        $schedule->command('lq:init --type=league')->cron('*/60 * * * *')->runInBackground()->withoutOverlapping();
         #抓取球探篮球球员
-        $schedule->command('lq:init --type=player')->cron('*/60 * * * *')->runInBackground();
+        $schedule->command('lq:init --type=player')->cron('*/60 * * * *')->runInBackground()->withoutOverlapping();
         #抓取球探篮球球队
-        $schedule->command('lq:init --type=team')->cron('*/60 * * * *')->runInBackground();
+        $schedule->command('lq:init --type=team')->cron('*/60 * * * *')->runInBackground()->withoutOverlapping();
 
-        $schedule->command('lq:crontab --type=team')->cron('*/60 * * * *')->runInBackground();
+        $schedule->command('lq:crontab --type=team')->cron('*/60 * * * *')->runInBackground()->withoutOverlapping();
 
-        $schedule->command('lq:crontab --type=match --days=5')->cron('0 */2 * * *')->runInBackground();
+        $schedule->command('lq:crontab --type=match --days=5')->cron('0 */2 * * *')->runInBackground()->withoutOverlapping();
 
         $schedule->command('lq:crontab --type=3w_odds')->cron('*/3 * * * *');
         $schedule->command('lq:crontab --type=3w_odds --time=4')->cron('8,38 * * * *');
@@ -120,14 +120,14 @@ class Kernel extends ConsoleKernel
         $schedule->command('lq:crontab --type=odds --odds_type=asian_total')->cron('*/5 * * * *');
 
         #抓取球探篮球技术统计
-        $schedule->command('lq:lqStatistics')->everyTenMinutes()->runInBackground();
+        $schedule->command('lq:lqStatistics')->everyTenMinutes()->runInBackground()->withoutOverlapping();
         #篮球阵容
-        $schedule->command('grab:qtlqLineup')->dailyAt('2:00')->runInBackground();
+        $schedule->command('grab:qtlqLineup')->dailyAt('2:00')->runInBackground()->withoutOverlapping();
         #删除、修改比赛
         $schedule->command('lq:crontab --type=modify_match')->everyTenMinutes();
         #当日比分
-        $schedule->command('lq:crontab --type=today_score')->everyTenMinutes()->runInBackground();
+        $schedule->command('lq:crontab --type=today_score')->everyTenMinutes()->runInBackground()->withoutOverlapping();
         #篮球比分直播
-        $schedule->command('grab:event')->everyMinute()->runInBackground();
+        $schedule->command('grab:event')->everyMinute()->runInBackground()->withoutOverlapping();
     }
 }

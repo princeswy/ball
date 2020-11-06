@@ -46,3 +46,4 @@ $router->get('/api/getBstatisTeam','BstatisticsController@Bstatis_team');
 $router->get('/api/getBstatisplayer','BstatisticsController@Bstatisplayer');
 $router->get('/api/getBmatchOddsList','BoddsController@odds_list');
 $router->get('/api/getStatisplayerShoot','BstatisticsController@StatisplayerShoot');
+$router->get('/api/getBmatchlineup','BmatchlineupController@index');

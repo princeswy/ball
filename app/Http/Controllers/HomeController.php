@@ -8,6 +8,8 @@ use App\models\Fleague;
 use App\models\Fseason;
 use App\models\Bleague;
 use App\models\Bseason;
+use App\models\Bgroup;
+use App\models\Bsection;
 use DB;
 class HomeController extends Controller
 {
@@ -46,7 +48,26 @@ class HomeController extends Controller
         return ['code' => 1,'success' => true,'list' => $season];
     }
     
+    //篮球查询赛季下的阶段
+    public function section_list(Request $request){
+        $season_id = $request->input('season_id') ? $request->input('season_id') :0;
+         //查赛事阶段
+        //SELECT * FROM d_bsection WHERE season_id=1;
+        $Bsection = Bsection::where('season_id', $season_id)->select('id','section_name')->get()->toarray();
+        return ['code' => 1,'success' => true,'list' => $Bsection];
+        
+    }
+    
 
+    //篮球查询赛季下的阶段
+    public function group_list(Request $request){
+         $section_id = $request->input('section_id') ? $request->input('section_id') :0;
+         //查询分组
+        //SELECT * FROM d_bgroup WHERE section_id=1;
+        $Bgroup = Bgroup::where('section_id', $section_id)->select('id','group_name')->get()->toarray();
+        return ['code' => 1,'success' => true,'list' => $Bgroup];
+    }
+    
 
 
 }

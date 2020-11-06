@@ -25,11 +25,14 @@ class FmatchController extends Controller
 
 //
     public function show(Request $request) {
-        $date = date('Y-m-d');
-        $match_time = $request->input('match_time') ? $request->input('match_time') : $date;
+        $match_time = $request->input('match_time') ? $request->input('match_time') : false;
         $league_id = $request->input('league_id') ? $request->input('league_id') : false;
         $match_state = $request->input('match_state') ? $request->input('match_state') : 0;
         $match_type = $request->input('match_type') ? $request->input('match_type') : 1; // 1是足球 2是篮球
+        $match_id = $request->input('match_id') ? $request->input('match_id') :'';
+        if(!$match_id){
+            $match_time = date('Y-m-d');
+        }
         $dateMap = [
             date("Y-m-d",strtotime("-1 day"))
         ];
@@ -47,7 +50,14 @@ class FmatchController extends Controller
             'list' => []
         ];
         if ($match_type == 1) {
-            $fmatch = Fmatch::where('match_time', 'like', $match_time . '%');
+            $fmatch = Fmatch::where('match_id','<>','');
+            if($match_time){
+                $fmatch = Fmatch::where('match_time', 'like', $match_time . '%');
+            }
+
+            if($match_id){
+                $fmatch = $fmatch->whereIn('match_id', explode(',', $match_id));
+            }
             if ($league_id) {
                 $fmatch = $fmatch->whereIn('league_id', explode(',', $league_id));
             }
@@ -90,8 +100,13 @@ class FmatchController extends Controller
             }
             $res['matchState'] = [0 => '未开赛',1 => '上半场',2 => '中场',3 => '下半场',4 => '加时',5 => '点球','-1' => '完场','-10' => '取消','-11' => '待定','-12' => '腰斩','-13' => '中断','-14' => '推迟'];
         }else{//竞彩篮球
-
-            $Bmatch = Bmatch::where('match_time', 'like', $match_time . '%');
+             $Bmatch = Bmatch::where('id','<>','');
+            if($match_time){
+                $Bmatch = $Bmatch->where('match_time', 'like', $match_time . '%');
+            }
+            if($match_id){
+                $Bmatch = $Bmatch->whereIn('id', explode(',', $match_id));
+            }
             if ($league_id) {
                 $Bmatch = $Bmatch->whereIn('league_id', explode(',', $league_id));
             }

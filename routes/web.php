@@ -54,3 +54,4 @@ $router->get('/api/getMonth_data','BmatchController@Month_data');
 $router->get('/api/getBmatch','BmatchController@index');
 $router->get('/api/getSection_list','HomeController@section_list');
 $router->get('/api/getGroup_list','HomeController@group_list');
+$router->get('/api/getPlayer_mvp','BmatchController@player_mvp');

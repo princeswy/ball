@@ -69,6 +69,44 @@ class BmatchController extends Controller
 
 
 
+ //球员榜
+    public function player_mvp(Request $request){
+        $data = [];
+        $league_id = $request->input('league_id') ? $request->input('league_id') : 0;
+        $season_id = $request->input('season_id') ? $request->input('season_id') : 0;
+        //查询比赛
+        
+        #//平均得分
+        $score_sql = "SELECT avg(score) as num,player_id,d_bstatisplayer.player_name,d_bplayer.photo as logo FROM d_bstatisplayer join d_bplayer on d_bplayer.id=player_id WHERE match_id in (SELECT id FROM d_bmatch WHERE league_id =$league_id AND season_id=$season_id) GROUP BY player_id ORDER BY num desc limit 30";
+        $score = DB::select($score_sql);
+        #篮板
+        $shoot_sql = "SELECT avg(shoot) as num,player_id,d_bstatisplayer.player_name,d_bplayer.photo as logo FROM d_bstatisplayer join d_bplayer on d_bplayer.id=player_id WHERE match_id in (SELECT id FROM d_bmatch WHERE league_id =$league_id AND season_id=$season_id) GROUP BY player_id ORDER BY num desc limit 30";
+        $shoot = DB::select($shoot_sql);
+        #助攻
 
+        $helpattack_sql = "SELECT avg(helpattack) as num,player_id,d_bstatisplayer.player_name,d_bplayer.photo as logo FROM d_bstatisplayer join d_bplayer on d_bplayer.id=player_id WHERE match_id in (SELECT id FROM d_bmatch WHERE league_id =$league_id AND season_id=$season_id) GROUP BY player_id ORDER BY num desc limit 30";
+        $helpattack = DB::select($helpattack_sql);
+
+#抢断
+
+        $rob_sql = "SELECT avg(rob) as num,player_id,d_bstatisplayer.player_name,d_bplayer.photo as logo FROM d_bstatisplayer join d_bplayer on d_bplayer.id=player_id WHERE match_id in (SELECT id FROM d_bmatch WHERE league_id =$league_id AND season_id=$season_id) GROUP BY player_id ORDER BY num desc limit 30";
+        $rob = DB::select($rob_sql);
+
+#盖帽
+
+        $cover_sql = "SELECT avg(cover) as num,player_id,d_bstatisplayer.player_name,d_bplayer.photo as logo FROM d_bstatisplayer join d_bplayer on d_bplayer.id=player_id WHERE match_id in (SELECT id FROM d_bmatch WHERE league_id =$league_id AND season_id=$season_id) GROUP BY player_id ORDER BY num desc limit 30";
+        $cover = DB::select($cover_sql);
+        if($score&&$shoot&&$helpattack&&$rob&&$cover){
+            $data['score'] = $score;
+            $data['shoot'] = $shoot;
+            $data['helpattack'] = $helpattack;
+            $data['rob'] = $rob;
+            $data['cover'] = $cover;
+        }
+
+        return ['code' => 1,'success' => true,'list' =>$data];
+
+
+    }
 
 }

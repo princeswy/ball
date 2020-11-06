@@ -92,6 +92,7 @@ class lqCrontab extends  Command
         $sourcedata = [];
         if ( $league_id ) {
             $url = self::$match_url.'?leagueId='.$league_id;
+            $this->info($url);
             $res = self::send_request($url);
             $sourcedata = json_decode($res['content']);
             $this->info('共'.count($sourcedata->matchList).'条数据');
@@ -112,7 +113,7 @@ class lqCrontab extends  Command
                 }
                 # 如果已完场
                 if(in_array($eventstatus, ['-1'])){
-                    $eventdata['status'] = $val['match_state'];
+                    $eventdata['status'] = $val['state'];
                     list($eventdata['home_points'] ,$eventdata['away_points']) = explode('-', $val['score']);
                     $eventdata['home_first'] = $val['home_first_score'];
                     $eventdata['away_first'] = $val['away_first_score'];

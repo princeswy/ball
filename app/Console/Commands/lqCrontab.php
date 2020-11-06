@@ -12,25 +12,10 @@ use App\models\Bleague;
 use App\models\Bmatch;
 use App\models\Bodds;
 use App\models\Bscoretable;
-use App\models\Continent;
-use App\models\Country;
-use App\models\Fgym;
-use App\models\Fleague;
-use App\models\Fmanager;
-use App\models\Fmatch;
-use App\models\Fmissplayer;
-use App\models\Fplayer;
-use App\models\Freferee;
-use App\models\Fseason;
-use App\models\Fsection;
-use App\models\Fteam;
-use App\models\Task;
-use GuzzleHttp\Pool;
 use Illuminate\Console\Command;
 use GuzzleHttp\Client;
 use GuzzleHttp\Psr7\Request;
 use GuzzleHttp\Exception\RequestException;
-use MongoDB\Driver\Manager;
 
 class lqCrontab extends  Command
 {

@@ -52,6 +52,8 @@ class Kernel extends ConsoleKernel
         \App\Console\Commands\lqCrontab::class,
         \App\Console\Commands\lqStatistics::class,
         \App\Console\Commands\lqLineUp::class,
+        \App\Console\Commands\lqLiveScore::class,
+        \App\Console\Commands\bLiveScore::class,
     ];
 
     /**
@@ -125,5 +127,7 @@ class Kernel extends ConsoleKernel
         $schedule->command('lq:crontab --type=modify_match')->everyTenMinutes();
         #当日比分
         $schedule->command('lq:crontab --type=today_score')->everyTenMinutes()->runInBackground();
+        #篮球比分直播
+        $schedule->command('grab:event')->everyMinute()->runInBackground();
     }
 }

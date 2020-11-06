@@ -203,7 +203,6 @@ class Bevent extends Model {
 
     public static function get_score_redis($match_ids = [])
     {
-//        $redis = Predis::connection('bdata');
         if($match_ids){
             $data = Predis::hmget(self::$match_score_key,$match_ids);
             return array_combine($match_ids, $data);
@@ -408,57 +407,40 @@ class Bevent extends Model {
 
     public static function get_score()
     {
-        $redis = Predis::connection('bdata');
-        return $redis->rpop(self::$live_score_key);
+        return Predis::rpop(self::$live_score_key);
     }
 
     public function get_fn_redis($fn){
-
-        $redis = Predis::connection('bdata');
         if (!$fn) {
             return false;
         }
-        $ret = $redis->get(self::$match_fn_key);
+        $ret = Predis::get(self::$match_fn_key);
 
         return $ret;
     }
 
     public function set_fn_redis($fn)
     {
-        $redis = Predis::connection('bdata');
-
-        $ret =  $redis->set(self::$match_fn_key, $fn);
+        $ret =  Predis::et(self::$match_fn_key, $fn);
 
         return $ret;
     }
 
-    public function convert_qtscore($data, &$up_match)
+    public static function convert_qtscore($data, &$up_match)
     {
-        if(!isset($data['c']['h']) || empty($data['c']['h'])){
+        if(!isset($data->changeList) || empty($data->changeList)){
             return [];
         }
-        $data = $data['c']['h'];
-        $data = _foreach_data($data);
-
-        foreach ( $data as $k => $v ) {
-
-            $out_ids[] = explode('^', $v['value'])[0];
-
-        }
-//        $out_ids = array_map(array($this,'_get_ids'), $data);
-
-        $match_ids = DB::table('d_bmatchmap')->whereIn('out_matchid',$out_ids)->get(array('out_matchid','match_id'));
-        $match_ids = array_column($match_ids, 'match_id','out_matchid');
+        $data = $data->changeList;
+        $out_ids = array_column($data, 'matchId');
+        $match_ids = Bmatch::whereIn('out_match_id',$out_ids)->get(['out_match_id','id']);
+        $match_ids = $match_ids ? array_column($match_ids->toArray(), 'id','out_match_id') : [];
 
         $score = [];
-        foreach ($data as $key=>$val){
-            $list = explode('^', $val['value']);
-            if(!isset($match_ids[$list[0]])){
-                continue;
-            }
-            $match_id = $match_ids[$list[0]];
+        foreach ($data as $key => $val){
+            $match_id = isset($match_ids[$val->matchId]) ? $match_ids[$val->matchId] : 0;
 
-            $match_state = self::get_match_state( $list[1], 'win007' );
+            $match_state = self::get_match_state( $val->matchState, 'win007' );
 
             $end_status = [
                 '第1节结束.' => 2,
@@ -467,60 +449,62 @@ class Bevent extends Model {
                 '第4节结束.' => 8,
             ];
 
-            if ( in_array( $list[14], $end_status ) ) {
-                $match_state = $end_status[$list[14]];
-            }
+            /*if ( in_array( $list[33], $end_status ) ) {
+                $match_state = $end_status[$list[33]];
+            }*/
 
             $score[$match_id]['match_id'] = $match_id;
             $score[$match_id]['match_status'] = $match_state;
 
-            if($list[1] == '-1'){
-                $first_score = $list[5].'-'.$list[6];
-                $second_score = $list[7].'-'.$list[8];
-                $third_score = $list[9].'-'.$list[10];
-                $fourth_score = $list[11].'-'.$list[12];
+            if($val->matchState == '-1'){
+                $first_score = $val->home1.'-'.$val->away1;
+                $second_score = $val->home2.'-'.$val->away2;
+                $third_score = $val->home3.'-'.$val->away3;
+                $fourth_score = $val->home4.'-'.$val->away4;
 
                 $up_match[$match_id]['id'] = $match_id;
                 $up_match[$match_id]['match_state'] = $match_state;
-                $up_match[$match_id]['score'] = $list[3].'-'.$list[4];
+                $up_match[$match_id]['score'] = $val->homeScore.'-'.$val->awayScore;
                 $up_match[$match_id]['first_score'] = $first_score != '-' ? $first_score : '';
 
                 $up_match[$match_id]['second_score'] = $second_score != '-' ? $second_score : '';
                 $up_match[$match_id]['third_score'] = $third_score != '-' ? $third_score : '';
                 $up_match[$match_id]['fourth_score'] = $fourth_score != '-' ? $fourth_score : '';
 
-                $up_match[$match_id]['overtimes'] = $list[13];
-                $list[13] >= 1 && $up_match[$match_id]['firstot'] = $list[16].'-'.$list[17];
-                $list[13] >= 2 && $up_match[$match_id]['secondot'] = $list[18].'-'.$list[19];
-                $list[13] >= 3 && $up_match[$match_id]['thirdot'] = $list[20].'-'.$list[21];
+                $up_match[$match_id]['overtimes'] = $val->overtimeCount;
+                $val->overtimeCount >= 1 && $up_match[$match_id]['firstot'] = $val->homeOT1.'-'.$val->awayOT1;
+                $val->overtimeCount >= 2 && $up_match[$match_id]['secondot'] = $val->homeOT2.'-'.$val->awayOT2;
+                $val->overtimeCount >= 3 && $up_match[$match_id]['thirdot'] = $val->homeOT3.'-'.$val->awayOT3;
             }
 
-            $score[$match_id]['jieshu'] = $list[15];
-            $score[$match_id]['remain_time'] = $list[2] ?? 0;
-            $score[$match_id]['home_points'] = $list[3];
-            $score[$match_id]['away_points'] = $list[4];
+//            $score[$match_id]['jieshu'] = $val->leagueType;
+            $score[$match_id]['remain_time'] = $val->remainTime;
+            $score[$match_id]['home_points'] = $val->homeScore;
+            $score[$match_id]['away_points'] = $val->awayScore;
 
-            $score[$match_id]['home_first'] = $list[5];
-            $score[$match_id]['away_first'] = $list[6];
-            $score[$match_id]['home_second'] = $list[7];
-            $score[$match_id]['away_second'] = $list[8];
+            $score[$match_id]['home_first'] = $val->home1;
+            $score[$match_id]['away_first'] = $val->away1;
+            $score[$match_id]['home_second'] = $val->home2;
+            $score[$match_id]['away_second'] = $val->away2;
 
-            $score[$match_id]['home_third'] = $list[9];
-            $score[$match_id]['away_third'] = $list[10];
-            $score[$match_id]['home_fourth'] = $list[11];
-            $score[$match_id]['away_fourth'] = $list[12];
+            $score[$match_id]['home_third'] = $val->home3;
+            $score[$match_id]['away_third'] = $val->away3;
+            $score[$match_id]['home_fourth'] = $val->home4;
+            $score[$match_id]['away_fourth'] = $val->away4;
 
-            $score[$match_id]['live'] = $list[14];
-            list($score[$match_id]['home_odds'],$score[$match_id]['away_odds']) = explode(',', $list[24]);
-            $score[$match_id]['overtimes'] = $list[13];
+//            $score[$match_id]['live'] = $val->tv;
+            $score[$match_id]['home_odds'] = '';
+            $score[$match_id]['away_odds'] = '';
 
-            $score[$match_id]['home_firstot'] = $list[16];
-            $score[$match_id]['away_firstot'] = $list[17];
+            $score[$match_id]['overtimes'] = $val->overtimeCount;
 
-            $score[$match_id]['home_secondot'] = $list[18];
-            $score[$match_id]['away_secondot'] = $list[19];
-            $score[$match_id]['home_thirdot'] = $list[20];
-            $score[$match_id]['away_thirdot'] = $list[21];
+            $score[$match_id]['home_firstot'] = $val->homeOT1;
+            $score[$match_id]['away_firstot'] = $val->awayOT1;
+
+            $score[$match_id]['home_secondot'] = $val->homeOT2;
+            $score[$match_id]['away_secondot'] = $val->awayOT2;
+            $score[$match_id]['home_thirdot'] = $val->homeOT3;
+            $score[$match_id]['away_thirdot'] = $val->awayOT2;
 //            $score[$match_id]['out_matchid'] = $list[0];
         }
 

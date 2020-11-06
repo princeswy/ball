@@ -115,16 +115,13 @@ class lqCrontab extends  Command
                 if(in_array($eventstatus, ['-1'])){
                     $eventdata['status'] = $val['state'];
                     list($eventdata['home_points'] ,$eventdata['away_points']) = explode('-', $val['score']);
-                    $eventdata['home_first'] = $val['home_first_score'];
-                    $eventdata['away_first'] = $val['away_first_score'];
-                    $eventdata['home_second'] = $val['home_second_score'];
-                    $eventdata['away_second'] = $val['away_second_score'];
-                    $eventdata['home_third'] = $val['home_third_score'];
-                    $eventdata['away_third'] = $val['away_third_score'];
-                    $eventdata['home_fourth'] = $val['home_fourth_score'];
-                    $eventdata['away_fourth'] = $val['away_fourth_score'];
-                    $eventdata['home_firstot'] = $val['home_ot'];
-                    $eventdata['away_firstot'] = $val['away_ot'];
+                    list($eventdata['home_first'], $eventdata['away_first']) = explode('-', $val['first_score']);
+                    list($eventdata['home_second'], $eventdata['away_second']) = explode('-', $val['second_score']);
+                    list($eventdata['home_third'], $eventdata['away_third']) = explode('-', $val['third_score']);
+                    list($eventdata['home_fourth'], $eventdata['away_fourth']) = explode('-', $val['fourth_score']);
+                    list($eventdata['home_firstot'], $eventdata['away_firstot']) = explode('-', $val['firstot']);
+                    list($eventdata['home_secondot'], $eventdata['away_secondot']) = explode('-', $val['secondot']);
+                    list($eventdata['home_thirdot'], $eventdata['away_thirdot']) = explode('-', $val['thirdot']);
                 }
 
                 if($eventdata){
@@ -157,18 +154,15 @@ class lqCrontab extends  Command
                     }
                     # 如果已完场
                     if(in_array($eventstatus, ['-1'])){
-                        $eventdata['status'] = $val['match_state'];
+                        $eventdata['status'] = $val['state'];
                         list($eventdata['home_points'] ,$eventdata['away_points']) = explode('-', $val['score']);
-                        $eventdata['home_first'] = $val['home_first_score'];
-                        $eventdata['away_first'] = $val['away_first_score'];
-                        $eventdata['home_second'] = $val['home_second_score'];
-                        $eventdata['away_second'] = $val['away_second_score'];
-                        $eventdata['home_third'] = $val['home_third_score'];
-                        $eventdata['away_third'] = $val['away_third_score'];
-                        $eventdata['home_fourth'] = $val['home_fourth_score'];
-                        $eventdata['away_fourth'] = $val['away_fourth_score'];
-                        $eventdata['home_firstot'] = $val['home_ot'];
-                        $eventdata['away_firstot'] = $val['away_ot'];
+                        list($eventdata['home_first'], $eventdata['away_first']) = explode('-', $val['first_score']);
+                        list($eventdata['home_second'], $eventdata['away_second']) = explode('-', $val['second_score']);
+                        list($eventdata['home_third'], $eventdata['away_third']) = explode('-', $val['third_score']);
+                        list($eventdata['home_fourth'], $eventdata['away_fourth']) = explode('-', $val['fourth_score']);
+                        list($eventdata['home_firstot'], $eventdata['away_firstot']) = explode('-', $val['firstot']);
+                        list($eventdata['home_secondot'], $eventdata['away_secondot']) = explode('-', $val['secondot']);
+                        list($eventdata['home_thirdot'], $eventdata['away_thirdot']) = explode('-', $val['thirdot']);
                     }
 
                     if($eventdata){

@@ -18,7 +18,7 @@ class bLiveScore extends Command
      *
      * @var string
      */
-    protected $signature = 'push:ball';
+    protected $signature = 'bmatch:socket';
 
     /**
      * The console command description.
@@ -68,7 +68,7 @@ class bLiveScore extends Command
     {
         if ('cli' == php_sapi_name()) {
 
-            $port = 9601;
+            $port = 9502;
             $this->server = new swoole_websocket_server($this->server_ip, $port);
             $this->server->set([
                 'worker_num' => 4,

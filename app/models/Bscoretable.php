@@ -89,10 +89,9 @@ class Bscoretable extends Model
                     $season_map = $season_name;
                 }
             }
+            $season_name = implode('-', $season_map);
 
             $season_id = Bseason::firstOrCreate( [ 'league_id' => $league_id, 'season_name' => $season_name ] )->id;
-
-            $season_name = implode('-', $season_map);
 
 //            $ret[$key]['source'] = $source;
             $ret[$key]['league_type'] = $league_type;

@@ -52,5 +52,5 @@ $router->get('/api/getBmatchlineup','BmatchlineupController@index');
 //篮球赛事赛果相关
 $router->get('/api/getMonth_data','BmatchController@Month_data');
 $router->get('/api/getBmatch','BmatchController@index');
-$router->get('/api/getsection_list','HomeController@section_list');
-$router->get('/api/getgroup_list','HomeController@group_list');
+$router->get('/api/getSection_list','HomeController@section_list');
+$router->get('/api/getGroup_list','HomeController@group_list');

@@ -25,14 +25,14 @@ class FmatchController extends Controller
 
 //
     public function show(Request $request) {
-        $match_time = $request->input('match_time') ? $request->input('match_time') : false;
+        $match_time = $request->input('match_time') ? $request->input('match_time') : date('Y-m-d');
         $league_id = $request->input('league_id') ? $request->input('league_id') : false;
         $match_state = $request->input('match_state') ? $request->input('match_state') : 0;
         $match_type = $request->input('match_type') ? $request->input('match_type') : 1; // 1是足球 2是篮球
         $match_id = $request->input('match_id') ? $request->input('match_id') :'';
-        if(!$match_id){
+        /*if(!$match_id){
             $match_time = date('Y-m-d');
-        }
+        }*/
         $dateMap = [
             date("Y-m-d",strtotime("-1 day"))
         ];
@@ -425,9 +425,9 @@ class FmatchController extends Controller
         ];
         if ($match_type == 1) {
             $match_map = [];
-            for ($i = 2; $i <= 24; $i ++) {
+            for ($i = 0; $i <= 24; $i ++) {
                 $time = date('Y-m-d H:i:s', strtotime('+'.$i.' hours'));
-                $match_map = Fmatch::where('match_time', '>=', date('Y-m-d H:i:s'))->where('match_time', '<=', $time)->whereIn('match_state', [0, 1, 2, 3, 4, 5])->orderBy('match_time', 'asc')->limit(30)->get();
+                $match_map = Fmatch::where('match_time', '>=', date('Y-m-d H:i:s'))->where('match_time', '<=', $time)->whereIn('match_state', [0, 1, 2, 3, 4, 5])->orderBy('match_time', 'asc')->limit(10)->get();
                 if ($match_map) {
                     $match_map = $match_map->toArray();
                     break;

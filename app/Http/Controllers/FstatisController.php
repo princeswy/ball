@@ -16,7 +16,7 @@ class FstatisController extends Controller
         $ret = [
             'code' => 1,
             'message' => '成功',
-            'data' => [],
+            'list' => [],
             'success' => true
         ];
         if (!$match_id) {
@@ -30,7 +30,7 @@ class FstatisController extends Controller
             $ret['message'] = '暂无数据';
             return $ret;
         }
-        $ret['data'] = $statis->toArray();
+        $ret['list'] = $statis->toArray();
         return $ret;
     }
 

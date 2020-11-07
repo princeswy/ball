@@ -425,15 +425,10 @@ class FmatchController extends Controller
         ];
         if ($match_type == 1) {
             $match_map = [];
-            for ($i = 0; $i <= 24; $i ++) {
-                $time = date('Y-m-d H:i:s', strtotime('+'.$i.' hours'));
-                $match_map = Fmatch::where('match_time', '>=', date('Y-m-d H:i:s'))->where('match_time', '<=', $time)->whereIn('match_state', [0, 1, 2, 3, 4, 5])->orderBy('match_time', 'asc')->limit(10)->get();
-                if ($match_map) {
-                    $match_map = $match_map->toArray();
-                    break;
-                }
-            }
+            $time = date('Y-m-d H:i:s', strtotime('+24 hours'));
+            $match_map = Fmatch::where('match_time', '>=', date('Y-m-d H:i:s'))->where('match_time', '<=', $time)->whereIn('match_state', [0, 1, 2, 3, 4, 5])->orderBy('match_time', 'asc')->limit(10)->get();
             if ($match_map) {
+                $match_map = $match_map->toArray();
                 $home_id_map = array_unique(array_column($match_map, 'home_id'));
                 $guest_id_map = array_unique(array_column($match_map, 'guest_id'));
                 $team_id_map = array_unique(array_merge($home_id_map, $guest_id_map));

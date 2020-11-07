@@ -426,7 +426,7 @@ class FmatchController extends Controller
         if ($match_type == 1) {
             $match_map = [];
             $time = date('Y-m-d H:i:s', strtotime('+24 hours'));
-            $match_map = Fmatch::where('match_time', '>=', date('Y-m-d H:i:s'))->where('match_time', '<=', $time)->whereIn('match_state', [0, 1, 2, 3, 4, 5])->orderBy('match_time', 'asc')->limit(10)->get();
+            $match_map = Fmatch::where('match_time', '>=', date('Y-m-d 00:00:00'))->where('match_time', '<=', $time)->where('match_state', '>=', 0)->orderBy('match_time', 'asc')->limit(10)->get();
             if ($match_map) {
                 $match_map = $match_map->toArray();
                 $home_id_map = array_unique(array_column($match_map, 'home_id'));

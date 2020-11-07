@@ -40,7 +40,7 @@ class BstatisticsController extends Controller
             $match_id = $match_data ? $match_data->id : false;
         }
         if ($match_id) {
-                $data = Bstatisteam::where('match_id', $match_id)->get()->toarray();
+                $data = Bstatisteam::where('match_id', $match_id)->first()->toarray();
         } else {
             return ['code' => 0,'success' => false,'list' => [], 'message' => '参数无效'];
         }

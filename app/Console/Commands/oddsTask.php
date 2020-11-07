@@ -40,7 +40,7 @@ class oddsTask extends  Command
 
     public function handle () {
         $time = $this->option('time');
-        $script_name = substr($this->signature,0,strpos($this->signature,' '));
+        $script_name = $this->signature;
         check_process_num($script_name) || exit('Process limit');
         $type = $time < 5 ? '?day='.$time : '?min='.$time;
         $url = self::$Url.$type;

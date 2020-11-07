@@ -49,7 +49,7 @@ class matchDetailTask extends  Command
     public function handle () {
         $url = self::$Url;
         $date = $this->option('date');
-        $script_name = substr($this->signature,0,strpos($this->signature,' '));
+        $script_name = $this->signature;
         if ($date) {
             $url = $url.'?date='.$date;
             $script_name = $script_name.' -date='.$date;

@@ -38,7 +38,7 @@ class todayMatchTask extends  Command
     public static $Url = 'http://interface.win007.com/football/today.aspx';
 
     public function handle () {
-        $script_name = substr($this->signature,0,strpos($this->signature,' '));
+        $script_name = $this->signature;
         check_process_num($script_name) || exit('Process limit');
         $url = self::$Url;
         $res = self::send_request($url);

@@ -45,7 +45,7 @@ class missPlayerTask extends  Command
     public static $source = 'win007';
 
     public function handle () {
-        $script_name = substr($this->signature,0,strpos($this->signature,' '));
+        $script_name = $this->signature;
         check_process_num($script_name) || exit('Process limit');
         $res = self::send_request(self::$Url);
         $resData = json_decode($res['content']);

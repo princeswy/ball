@@ -91,8 +91,9 @@ class Kernel extends ConsoleKernel
         # 球员详细技术统计榜
         $schedule->command('fmatch:playerCountTask')->cron('*/30 * * * *')->runInBackground()->withoutOverlapping();
         # 欧赔
-        $schedule->command('fmatch:oddsTask')->cron('*/3 * * * *')->runInBackground()->withoutOverlapping();
-        $schedule->command('fmatch:oddsTask')->cron('8,38 * * * *')->runInBackground()->withoutOverlapping();
+        $schedule->command('fmatch:oddsTask --time=5')->cron('*/3 * * * *')->runInBackground()->withoutOverlapping();
+        $schedule->command('fmatch:oddsTask --time=1')->cron('0 */1 * * *')->runInBackground()->withoutOverlapping();
+        $schedule->command('fmatch:oddsTask --time=4')->cron('8,38 * * * *')->runInBackground()->withoutOverlapping();
         # 亚盘
         $schedule->command('fmatch:hOddsTask --odds_type=1')->everyThirtyMinutes()->runInBackground()->withoutOverlapping();
         # 大小球

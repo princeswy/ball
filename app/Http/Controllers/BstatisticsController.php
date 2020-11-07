@@ -33,12 +33,17 @@ class BstatisticsController extends Controller
     //球队1636
     public function Bstatis_team(Request $request){
         $match_id = $request->input('match_id') ? $request->input('match_id') : 0;
+        $out_match_id = $request->input('out_match_id') ? $request->input('out_match_id') : 0;
         $data = [];
+        if ($out_match_id) {
+            $match_data = Bmatch::where('out_match_id', $out_match_id)->first();
+            $match_id = $match_data ? $match_data->id : false;
+        }
         if ($match_id) {
                 $data = Bstatisteam::where('match_id', $match_id)->get()->toarray();
-            } else {
-                return ['code' => 0,'success' => false,'list' => [], 'message' => '参数无效'];
-            }
+        } else {
+            return ['code' => 0,'success' => false,'list' => [], 'message' => '参数无效'];
+        }
         //1636
         return ['code' => 1,'success' => true,'list' => $data];
     }

@@ -466,6 +466,21 @@ class Bevent extends Model {
             $score[$match_id]['match_id'] = $match_id;
             $score[$match_id]['match_status'] = $match_state;
 
+            $up_match[$match_id]['id'] = $match_id;
+            $up_match[$match_id]['state'] = $match_state;
+            $up_match[$match_id]['score'] = $val->homeScore.'-'.$val->awayScore;
+            $up_match[$match_id]['first_score'] = $val->home1.'-'.$val->away1 != '-' ? $val->home1.'-'.$val->away1 : '';
+
+            $up_match[$match_id]['second_score'] = $val->home2.'-'.$val->away2 != '-' ? $val->home2.'-'.$val->away2 : '';
+            $up_match[$match_id]['third_score'] = $val->home3.'-'.$val->away3 != '-' ? $val->home3.'-'.$val->away3 : '';
+            $up_match[$match_id]['fourth_score'] = $val->home4.'-'.$val->away4 != '-' ? $val->home4.'-'.$val->away4 : '';
+
+            $up_match[$match_id]['overtimes'] = $val->overtimeCount;
+            $val->overtimeCount >= 1 && $up_match[$match_id]['firstot'] = $val->homeOT1.'-'.$val->awayOT1;
+            $val->overtimeCount >= 2 && $up_match[$match_id]['secondot'] = $val->homeOT2.'-'.$val->awayOT2;
+            $val->overtimeCount >= 3 && $up_match[$match_id]['thirdot'] = $val->homeOT3.'-'.$val->awayOT3;
+            $up_match[$match_id]['remain_time'] = $val->remainTime;
+
             if($val->matchState == '-1'){
                 $first_score = $val->home1.'-'.$val->away1;
                 $second_score = $val->home2.'-'.$val->away2;

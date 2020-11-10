@@ -127,6 +127,9 @@ class Bscoretable extends Model
 
         $ret = [];
         $source = 'win007';
+        if (!isset($out_data['Season'])) {
+            return false;
+        }
 
         $season_name = $out_data['Season'];
 

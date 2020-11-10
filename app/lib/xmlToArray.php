@@ -105,7 +105,7 @@ class xmlToArray
 
 //         $data = mb_convert_encoding($data,"UTF-8" , "GB2312, BIG5, ASCII");
         if(stripos($data, 'gb2312')){
-            $data = iconv('gbk', "UTF-8//TRANSLIT", $data);
+            $data = iconv('gbk', "UTF-8", $data);
             $data = str_replace('gb2312', "UTF-8", $data);
         }
         try {

@@ -257,7 +257,7 @@ if(!function_exists('reset_key')){
 if(!function_exists('check_process_num')){
     function check_process_num($script_name) {
         $cmd = @popen("ps -ef | grep '{$script_name}' | grep -v grep | wc -l", 'r');
-        $num = @fread($cmd, 512);
+        $num = (int) @fread($cmd, 512);
         (int) $num += 0;
         @pclose($cmd);
         if ($num > 1) {

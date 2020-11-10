@@ -110,7 +110,7 @@ class hOddsTask extends  Command
     public static function check_process_num($script_name) {
         $cmd = @popen("ps -ef | grep '{$script_name}' | grep -v grep | wc -l", 'r');
         $num = @fread($cmd, 512);
-        $num += 0;
+        (int) $num += 0;
         @pclose($cmd);
         if ($num > 1) {
             return false;

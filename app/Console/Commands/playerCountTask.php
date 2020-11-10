@@ -24,7 +24,6 @@ use Illuminate\Console\Command;
 use GuzzleHttp\Client;
 use GuzzleHttp\Psr7\Request;
 use GuzzleHttp\Exception\RequestException;
-use MongoDB\Driver\Manager;
 
 class PlayerCountTask extends  Command
 {
@@ -49,7 +48,7 @@ class PlayerCountTask extends  Command
         if ($league_id) {
             $script_name = $script_name. '--league_id'.$league_id;
         }
-        check_process_num($script_name) || exit('Process limit');
+        self::check_process_num($script_name) || exit('Process limit');
 
         $leagueMap = [];
         if ($league_id) {
@@ -279,7 +278,6 @@ class PlayerCountTask extends  Command
         }
         dd(count($homeDataMap), count($guestDataMap));
     }
-
     /**
      * @param $Url
      * @param string $Method

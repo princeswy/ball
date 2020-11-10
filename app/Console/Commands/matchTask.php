@@ -68,7 +68,7 @@ class matchTask extends  Command
         if ($day) {
             $script_name = $script_name. ' --day='.$day;
         }
-        check_process_num($script_name) || exit('Process limit');
+        self::check_process_num($script_name) || exit('Process limit');
         if ($leagueId) {
             $league = Fleague::where('league_id', $leagueId)->first();
             if (!$league) {
@@ -243,6 +243,17 @@ class matchTask extends  Command
         }
         $teamId = $team->toArray()['team_id'];
         return $teamId;
+    }
+
+    public static function check_process_num($script_name) {
+        $cmd = @popen("ps -ef | grep '{$script_name}' | grep -v grep | wc -l", 'r');
+        $num = @fread($cmd, 512);
+        $num += 0;
+        @pclose($cmd);
+        if ($num > 1) {
+            return false;
+        }
+        return true;
     }
 
     /**

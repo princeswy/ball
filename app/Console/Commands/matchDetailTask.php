@@ -54,7 +54,7 @@ class matchDetailTask extends  Command
             $url = $url.'?date='.$date;
             $script_name = $script_name.' -date='.$date;
         }
-        check_process_num($script_name) || exit('Process limit');
+        self::check_process_num($script_name) || exit('Process limit');
         $res = self::send_request(self::$Url);
         $resData = json_decode($res['content']);
         $detailData = Feventdetail::handleData($resData);
@@ -78,6 +78,17 @@ class matchDetailTask extends  Command
             Fmstatis::updateOrCreate($where, $v);
         }
 //        $this->info('共处理'.count($resData->list).'场比赛数据');
+    }
+
+    public static function check_process_num($script_name) {
+        $cmd = @popen("ps -ef | grep '{$script_name}' | grep -v grep | wc -l", 'r');
+        $num = @fread($cmd, 512);
+        $num += 0;
+        @pclose($cmd);
+        if ($num > 1) {
+            return false;
+        }
+        return true;
     }
 
     /**

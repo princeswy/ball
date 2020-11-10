@@ -53,7 +53,7 @@ class lineUpTask extends  Command
         if ($matchId) {
             $script_name = $script_name.' --match_id='.$matchId;
         }
-        check_process_num($script_name) || exit('Process limit');
+        self::check_process_num($script_name) || exit('Process limit');
         if ($matchId) {
             $matchData = Fmatch::where('match_id', $matchId)->first();
             $outMatchId = $matchData ? $matchData->toArray()['out_match_id'] : false;
@@ -264,6 +264,17 @@ class lineUpTask extends  Command
             }
         }
         $this->info('共处理'.count($resData->lineupList).'场比赛数据');
+    }
+
+    public static function check_process_num($script_name) {
+        $cmd = @popen("ps -ef | grep '{$script_name}' | grep -v grep | wc -l", 'r');
+        $num = @fread($cmd, 512);
+        $num += 0;
+        @pclose($cmd);
+        if ($num > 1) {
+            return false;
+        }
+        return true;
     }
 
     /**

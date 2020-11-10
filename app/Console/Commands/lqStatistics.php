@@ -48,7 +48,7 @@ class lqStatistics extends  Command
             $url = self::$url.'?date='.$date;
             $script_name = $script_name.' --date='.$date;
         }
-        check_process_num($script_name) || exit('Process limit');
+        self::check_process_num($script_name) || exit('Process limit');
         $res = self::send_request($url);
         $out_data = json_decode($res['content']);
 
@@ -291,6 +291,17 @@ class lqStatistics extends  Command
 
     public function save_player($out_player_id, $player_name) {
         return Bplayer::firstOrCreate(['out_player_id' => $out_player_id, 'player_name' => $player_name])->id;
+    }
+
+    public static function check_process_num($script_name) {
+        $cmd = @popen("ps -ef | grep '{$script_name}' | grep -v grep | wc -l", 'r');
+        $num = @fread($cmd, 512);
+        $num += 0;
+        @pclose($cmd);
+        if ($num > 1) {
+            return false;
+        }
+        return true;
     }
     /**
      * @param $Url

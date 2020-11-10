@@ -39,7 +39,7 @@ class todayMatchTask extends  Command
 
     public function handle () {
         $script_name = $this->signature;
-        check_process_num($script_name) || exit('Process limit');
+        self::check_process_num($script_name) || exit('Process limit');
         $url = self::$Url;
         $res = self::send_request($url);
         $resData = json_decode($res['content']);
@@ -151,6 +151,17 @@ class todayMatchTask extends  Command
             Fmatch::handleSection($matchWhere, $matchData);
         }
         $this->info('共处理'.count($resData->matchList).'条数据');
+    }
+
+    public static function check_process_num($script_name) {
+        $cmd = @popen("ps -ef | grep '{$script_name}' | grep -v grep | wc -l", 'r');
+        $num = @fread($cmd, 512);
+        $num += 0;
+        @pclose($cmd);
+        if ($num > 1) {
+            return false;
+        }
+        return true;
     }
 
     /**

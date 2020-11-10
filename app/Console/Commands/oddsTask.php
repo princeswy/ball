@@ -41,7 +41,7 @@ class oddsTask extends  Command
     public function handle () {
         $time = $this->option('time');
         $script_name = $this->signature;
-        check_process_num($script_name) || exit('Process limit');
+        self::check_process_num($script_name) || exit('Process limit');
         $type = $time < 5 ? '?day='.$time : '?min='.$time;
         $url = self::$Url.$type;
         echo $url;
@@ -108,6 +108,17 @@ class oddsTask extends  Command
             }
         }
         $this->info('共处理'.count($resData->list).'条数据');
+    }
+
+    public static function check_process_num($script_name) {
+        $cmd = @popen("ps -ef | grep '{$script_name}' | grep -v grep | wc -l", 'r');
+        $num = @fread($cmd, 512);
+        $num += 0;
+        @pclose($cmd);
+        if ($num > 1) {
+            return false;
+        }
+        return true;
     }
 
     /**

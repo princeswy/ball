@@ -39,7 +39,7 @@ class hOddsTask extends  Command
         set_time_limit(0);
         $type = $this->option('odds_type');
         $script_name = $this->signature.' --odds_type='.$type;
-        check_process_num($script_name) || exit('Process limit');
+        self::check_process_num($script_name) || exit('Process limit');
         $res = $this->send_request(self::$hand_odds_url);
         $out_data = json_decode($res['content']);
         $out_data = $out_data->list[0];
@@ -105,6 +105,17 @@ class hOddsTask extends  Command
         $b = microtime(true);
         $this->info($b-$a);
         $this->info(count($out_data->overUnder));
+    }
+
+    public static function check_process_num($script_name) {
+        $cmd = @popen("ps -ef | grep '{$script_name}' | grep -v grep | wc -l", 'r');
+        $num = @fread($cmd, 512);
+        $num += 0;
+        @pclose($cmd);
+        if ($num > 1) {
+            return false;
+        }
+        return true;
     }
 
     /**

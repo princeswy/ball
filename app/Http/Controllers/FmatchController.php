@@ -112,7 +112,7 @@ class FmatchController extends Controller
             }
             // 进行中
             if ($match_state == 1) {
-                $Bmatch = $Bmatch->whereIn('state', [1, 2, 3, 4, 5, 6, 7]);
+                $Bmatch = $Bmatch->whereIn('state', [1, 2, 3, 4, 5, 6, 7,50]);
             }
             // 未开赛
             if ($match_state == 2) {

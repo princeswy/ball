@@ -65,7 +65,8 @@ class fLiveScore extends  Command
         $score_qt0 = Fevent::convert_qtscore_new($res1);
         $score_qt1 = Fevent::convert_qtscore_new($res2);
 
-        $score_qt = $score_qt0 + $score_qt1;
+//        $score_qt = $score_qt0 + $score_qt1;
+        $score_qt = $score_qt0;
 
         $out_matchids = array_keys($score_qt);
 
@@ -90,6 +91,7 @@ class fLiveScore extends  Command
             }
             $val['match_id'] = isset($match_id_map[$out_matchid]) ? $match_id_map[$out_matchid] : 0;
             Fevent::updateData($val);
+//            sleep(1);
         }
 
         $this->info("本次处理".count($match_id_map).'场比赛,耗时: '.(microtime(true) - $a));

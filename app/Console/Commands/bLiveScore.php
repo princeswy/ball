@@ -112,7 +112,7 @@ class bLiveScore extends Command
     {
 //        swoole_set_process_name("swoole_worker");
         if (!$server->taskworker) {
-            $server->tick(1000, function () use ($server) {
+            $server->tick(500, function () use ($server) {
                 if(!$server->worker_id){
                     $server->task('push');
                 }

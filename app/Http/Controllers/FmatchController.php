@@ -112,7 +112,7 @@ class FmatchController extends Controller
             }
             // 进行中
             if ($match_state == 1) {
-                $Bmatch = $Bmatch->whereIn('state', [1, 2, 3, 4, 5, 6, 7]);
+                $Bmatch = $Bmatch->whereIn('state', [1, 2, 3, 4, 5, 6, 7,50]);
             }
             // 未开赛
             if ($match_state == 2) {
@@ -426,7 +426,7 @@ class FmatchController extends Controller
         if ($match_type == 1) {
             $match_map = [];
             $time = date('Y-m-d H:i:s', strtotime('+24 hours'));
-            $match_map = Fmatch::where('match_time', '>=', date('Y-m-d 00:00:00'))->where('match_time', '<=', $time)->where('match_state', '>=', 0)->orderBy('match_time', 'asc')->limit(10)->get();
+            $match_map = Fmatch::where('match_time', '>=', date('Y-m-d 00:00:00'))->where('match_time', '<=', $time)->whereIn('match_state', [0, 1, 2, 3, 4, 5])->orderBy('match_time', 'asc')->limit(10)->get();
             if ($match_map) {
                 $match_map = $match_map->toArray();
                 $home_id_map = array_unique(array_column($match_map, 'home_id'));
@@ -441,6 +441,7 @@ class FmatchController extends Controller
                         $start_time = $event_data->toArray()['start_time'];
                     }
                     $ret['list'][] = [
+                        'match_type' => $match_type,
                         'match_id' => $val['match_id'],
                         'out_match_id' => $val['out_match_id'],
                         'home_name' => $val['home_name'],

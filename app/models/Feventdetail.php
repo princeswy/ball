@@ -37,6 +37,9 @@ class Feventdetail extends Model
             $match_id = $match_data ? $match_data->toArray()['match_id'] : 0;
             $map = [];
             foreach ($val->event as $e_key => $e_val) {
+                if (!isset($e_val->nameChs) || $e_val->nameChs == '') {
+                    continue;
+                }
                 $data = [
                     'match_id' => $match_id,
                     'out_match_id' => $out_match_id,

@@ -108,8 +108,9 @@ class Fevent extends Model
         list($eventData['home_goal'], $eventData['guest_goal']) = explode('-', $data['sc'], 2);
         list($eventData['home_yc'], $eventData['guest_yc']) = explode('-', $data['hy'], 2);
         list($eventData['home_rc'], $eventData['guest_rc']) = explode('-', $data['hr'], 2);
+        $isUpdate = true;
         if (Fevent::where($eventData)->first()) {
-            return false;
+            $isUpdate = false;
         }
         Fevent::updateOrCreate(['out_matchid' => $data['out_matchid']], $eventData);
 
@@ -131,7 +132,7 @@ class Fevent extends Model
             $pushData['tstime'] = time();
         }
 
-        if ($status != 0) {
+        if ($status != 0 && $isUpdate) {
             Fevent::write_score($pushData);
         }
     }

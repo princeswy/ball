@@ -83,15 +83,17 @@ class FmatchController extends Controller
             $team_id_map = array_unique(array_merge($home_id_map, $guest_id_map));
             $team_data = Fteam::whereIn('team_id', $team_id_map)->get(['team_id', 'logo_path'])->toArray();
             $team_map = array_column($team_data, 'logo_path', 'team_id');
+            $out_match_id_map = array_column($match_map, 'out_match_id');
+            $event_map = Fevent::whereIn('out_matchid', $out_match_id_map)->get(['start_time', 'out_matchid']);
+            $event_data = [];
+            if ($event_map) {
+                $event_map = $event_map->toArray();
+                $event_data = array_column($event_map, 'start_time', 'out_matchid');
+            }
             foreach ($match_map as $k => $v) {
                 $match_map[$k]['home_logo'] = isset($team_map[$v['home_id']]) ? $team_map[$v['home_id']] : '';
                 $match_map[$k]['guest_logo'] = isset($team_map[$v['guest_id']]) ? $team_map[$v['guest_id']] : '';
-                $event_data = Fevent::where('match_id', $v['match_id'])->first();
-                if (!$event_data) {
-                    $match_map[$k]['start_time'] = $v['match_time'];
-                } else {
-                    $match_map[$k]['start_time'] = $event_data->toArray()['start_time'];
-                }
+                $match_map[$k]['start_time'] = isset($event_data[$v['out_match_id']]) ? $event_data[$v['out_match_id']] : $v['match_time'];
             }
             $res['list'] = $match_map;
             if (count($match_map) > 0) {
